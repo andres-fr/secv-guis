@@ -1,0 +1,403 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>secv_guis.commands &mdash; secv_guis 0.1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> secv_guis
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../secv_guis.html">secv_guis package</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">secv_guis</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>secv_guis.commands</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for secv_guis.commands</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding:utf-8 -*-</span>
+
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This module contains all the &#39;undoable&#39; actions. They must implement a way</span>
+<span class="sd">to undo and redo them.</span>
+
+<span class="sd">Composite commands deserve a special mention: they are trains of actions</span>
+<span class="sd">that only track, store and report the initial and final state. They are</span>
+<span class="sd">particularly useful when performing interactive editings on big datastructures</span>
+<span class="sd">like pixmaps, to prevent memory bloating.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">PySide2</span> <span class="kn">import</span> <span class="n">QtCore</span><span class="p">,</span> <span class="n">QtWidgets</span><span class="p">,</span> <span class="n">QtGui</span>
+<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">pixmap_to_arr</span>
+
+
+<div class="viewcode-block" id="CompositeCommand"><a class="viewcode-back" href="../../secv_guis.html#secv_guis.commands.CompositeCommand">[docs]</a><span class="k">class</span> <span class="nc">CompositeCommand</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QUndoCommand</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    In some cases like painting a stroke into a pixmap, it doesn&#39;t make sense</span>
+<span class="sd">    to store every single update: rather, the prior and finished states only.</span>
+<span class="sd">    This class provides a structure for such cases:</span>
+
+<span class="sd">    1. Instantiate the command with the parameters that belong to the whole</span>
+<span class="sd">        composite action.</span>
+<span class="sd">    2. Call ``action`` for every desired update of the finished state</span>
+<span class="sd">    3. Call ``finish`` to crystalize the final state. No further ``action`` s</span>
+<span class="sd">        will be allowed, and (optionally) the action will be added to a Qt</span>
+<span class="sd">        ``UndoStack``.</span>
+
+<span class="sd">    The following is required to extend the class:</span>
+<span class="sd">    1. Define a ``COMMAND_NAME``</span>
+<span class="sd">    2. Extend the ``__init__``, ``action``, ``undo`` and ``redo`` methods.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># override this when extending!</span>
+    <span class="n">COMMAND_NAME</span> <span class="o">=</span> <span class="bp">NotImplemented</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">COMMAND_NAME</span><span class="p">,</span> <span class="n">parent</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_finished</span> <span class="o">=</span> <span class="kc">False</span>
+
+<div class="viewcode-block" id="CompositeCommand.action"><a class="viewcode-back" href="../../secv_guis.html#secv_guis.commands.CompositeCommand.action">[docs]</a>    <span class="k">def</span> <span class="nf">action</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Extend me!</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_finished</span><span class="p">,</span> \
+            <span class="s2">&quot;This CompositeCommand has already been finished!&quot;</span></div>
+
+<div class="viewcode-block" id="CompositeCommand.finish"><a class="viewcode-back" href="../../secv_guis.html#secv_guis.commands.CompositeCommand.finish">[docs]</a>    <span class="k">def</span> <span class="nf">finish</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">undo_stack</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :param undo_stack: If given, this command will be added to the stack,</span>
+<span class="sd">          wich then allows to undo/redo.</span>
+
+<span class="sd">        Call this function once you are done with the ``action`` s. Once finish</span>
+<span class="sd">        is called, no more ``action`` s are possible, so that the undo/redo</span>
+<span class="sd">        actions stay frozen.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_finished</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="n">undo_stack</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">undo_stack</span><span class="o">.</span><span class="n">push</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="DrawCommand"><a class="viewcode-back" href="../../secv_guis.html#secv_guis.commands.DrawCommand">[docs]</a><span class="k">class</span> <span class="nc">DrawCommand</span><span class="p">(</span><span class="n">CompositeCommand</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A composite command to draw a stroke of circles into a ``PixmapIten``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">COMMAND_NAME</span> <span class="o">=</span> <span class="s2">&quot;Draw&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pmi</span><span class="p">,</span> <span class="n">rgba</span><span class="p">,</span> <span class="n">diameter</span><span class="p">,</span>
+                 <span class="n">comp_mode</span><span class="o">=</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QPainter</span><span class="o">.</span><span class="n">CompositionMode_Source</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :param pmi: A ``PixmapItem``, where this command will apply.</span>
+<span class="sd">        :param rgba: A tuple ``(r, g, b, a)`` of ``0-255`` values.</span>
+<span class="sd">        :param diameter: In pixels, diameter of the circle to be drawn.</span>
+<span class="sd">        :param comp_mode: The &quot;Source&quot; mode ensures that the alphas don&#39;t</span>
+<span class="sd">          get added.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
+        <span class="c1"># Caution: memory intensive? (&lt;100 commands on 4k*6k seems ok)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">original_pixmap</span> <span class="o">=</span> <span class="n">pmi</span><span class="o">.</span><span class="n">pixmap</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">final_pixmap</span> <span class="o">=</span> <span class="n">pmi</span><span class="o">.</span><span class="n">pixmap</span><span class="p">()</span>
+        <span class="c1">#</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pmi</span> <span class="o">=</span> <span class="n">pmi</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rgba</span> <span class="o">=</span> <span class="n">rgba</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">diameter</span> <span class="o">=</span> <span class="n">diameter</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">comp_mode</span> <span class="o">=</span> <span class="n">comp_mode</span>
+        <span class="c1">#</span>
+        <span class="n">color</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QColor</span><span class="p">(</span><span class="o">*</span><span class="n">rgba</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">brush</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QBrush</span><span class="p">(</span><span class="n">color</span><span class="p">,</span> <span class="n">bs</span><span class="o">=</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">SolidPattern</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pen</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QPen</span><span class="p">(</span><span class="n">color</span><span class="p">)</span>
+
+<div class="viewcode-block" id="DrawCommand.action"><a class="viewcode-back" href="../../secv_guis.html#secv_guis.commands.DrawCommand.action">[docs]</a>    <span class="k">def</span> <span class="nf">action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x_pos</span><span class="p">,</span> <span class="n">y_pos</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Once the object has been constructed **and ``finish()`` hasn&#39;t been</span>
+<span class="sd">        called yet**, Call this function to paint a circle at given position.</span>
+<span class="sd">        Check constructor for further variables.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">action</span><span class="p">()</span>
+        <span class="c1"># get painter and set it up</span>
+        <span class="n">painter</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QPainter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">final_pixmap</span><span class="p">)</span>
+        <span class="n">painter</span><span class="o">.</span><span class="n">setCompositionMode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">comp_mode</span><span class="p">)</span>
+        <span class="n">painter</span><span class="o">.</span><span class="n">setBrush</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">brush</span><span class="p">)</span>
+        <span class="n">painter</span><span class="o">.</span><span class="n">setPen</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pen</span><span class="p">)</span>
+        <span class="c1">#</span>
+        <span class="n">diameter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">diameter</span>
+        <span class="n">radius</span> <span class="o">=</span> <span class="n">diameter</span> <span class="o">//</span> <span class="mi">2</span>
+        <span class="n">xywh</span> <span class="o">=</span> <span class="p">(</span><span class="n">x_pos</span> <span class="o">-</span> <span class="n">radius</span><span class="p">,</span> <span class="n">y_pos</span> <span class="o">-</span> <span class="n">radius</span><span class="p">,</span> <span class="n">diameter</span><span class="p">,</span> <span class="n">diameter</span><span class="p">)</span>
+        <span class="n">painter</span><span class="o">.</span><span class="n">drawEllipse</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QRect</span><span class="p">(</span><span class="o">*</span><span class="n">xywh</span><span class="p">))</span>
+        <span class="n">painter</span><span class="o">.</span><span class="n">end</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pmi</span><span class="o">.</span><span class="n">setPixmap</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">final_pixmap</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DrawCommand.redo"><a class="viewcode-back" href="../../secv_guis.html#secv_guis.commands.DrawCommand.redo">[docs]</a>    <span class="k">def</span> <span class="nf">redo</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function implements the interface for the UndoStack. Don&#39;t call</span>
+<span class="sd">        this directly.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pmi</span><span class="o">.</span><span class="n">setPixmap</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">final_pixmap</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DrawCommand.undo"><a class="viewcode-back" href="../../secv_guis.html#secv_guis.commands.DrawCommand.undo">[docs]</a>    <span class="k">def</span> <span class="nf">undo</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function implements the interface for the UndoStack. Don&#39;t call</span>
+<span class="sd">        this directly.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pmi</span><span class="o">.</span><span class="n">setPixmap</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">original_pixmap</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DrawCommand.finish"><a class="viewcode-back" href="../../secv_guis.html#secv_guis.commands.DrawCommand.finish">[docs]</a>    <span class="k">def</span> <span class="nf">finish</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">undo_stack</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Usually we don&#39;t override ``finish``, but since pixmaps are so big,</span>
+<span class="sd">        we don&#39;t want to store the command if original and final are equal.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_finished</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="n">undo_stack</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">original_arr</span> <span class="o">=</span> <span class="n">pixmap_to_arr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">original_pixmap</span><span class="p">,</span>
+                                         <span class="n">QtGui</span><span class="o">.</span><span class="n">QImage</span><span class="o">.</span><span class="n">Format_RGBA8888</span><span class="p">)</span>
+            <span class="n">final_arr</span> <span class="o">=</span> <span class="n">pixmap_to_arr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">final_pixmap</span><span class="p">,</span>
+                                      <span class="n">QtGui</span><span class="o">.</span><span class="n">QImage</span><span class="o">.</span><span class="n">Format_RGBA8888</span><span class="p">)</span>
+            <span class="c1"># Add to stack only if there is any difference</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">array_equal</span><span class="p">(</span><span class="n">original_arr</span><span class="p">,</span> <span class="n">final_arr</span><span class="p">):</span>
+                <span class="n">undo_stack</span><span class="o">.</span><span class="n">push</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="EraseCommand"><a class="viewcode-back" href="../../secv_guis.html#secv_guis.commands.EraseCommand">[docs]</a><span class="k">class</span> <span class="nc">EraseCommand</span><span class="p">(</span><span class="n">DrawCommand</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A composite command to erase a stroke of circles into a ``PixmapIten``.</span>
+<span class="sd">    See ``DrawCommand`` docstrings for more info.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">COMMAND_NAME</span> <span class="o">=</span> <span class="s2">&quot;Erase&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pmi</span><span class="p">,</span> <span class="n">diameter</span><span class="p">,</span>
+                 <span class="n">comp_mode</span><span class="o">=</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QPainter</span><span class="o">.</span><span class="n">CompositionMode_Source</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        See ``DrawCommand`` docstrings for more info.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">pmi</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">diameter</span><span class="p">,</span> <span class="n">comp_mode</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DrawOverlappingCommand"><a class="viewcode-back" href="../../secv_guis.html#secv_guis.commands.DrawOverlappingCommand">[docs]</a><span class="k">class</span> <span class="nc">DrawOverlappingCommand</span><span class="p">(</span><span class="n">DrawCommand</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Like ``DrawCommand``, but accepts 2 PixmapItems instead of one, so that</span>
+<span class="sd">    the drawing onto the first is only allowed if the same pixel is active in</span>
+<span class="sd">    the second.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">COMMAND_NAME</span> <span class="o">=</span> <span class="s2">&quot;Draw Overlapping&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pmi</span><span class="p">,</span> <span class="n">ref_pmi</span><span class="p">,</span> <span class="n">rgba</span><span class="p">,</span> <span class="n">diameter</span><span class="p">,</span>
+                 <span class="n">comp_mode</span><span class="o">=</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QPainter</span><span class="o">.</span><span class="n">CompositionMode_Source</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :param ref_pmi: This ``PixmapItem`` should be of same shape as ``pmi``.</span>
+<span class="sd">        See ``DrawCommand`` docstrings for more info.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">pmi</span><span class="p">,</span> <span class="n">rgba</span><span class="p">,</span> <span class="n">diameter</span><span class="p">,</span> <span class="n">comp_mode</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_reference_pmi</span> <span class="o">=</span> <span class="n">ref_pmi</span>
+
+<div class="viewcode-block" id="DrawOverlappingCommand.action"><a class="viewcode-back" href="../../secv_guis.html#secv_guis.commands.DrawOverlappingCommand.action">[docs]</a>    <span class="k">def</span> <span class="nf">action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x_pos</span><span class="p">,</span> <span class="n">y_pos</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Paint a circle on ``pmi`` at given position, masked by ``ref_pmi``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># get painter and set it up</span>
+        <span class="n">painter</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QPainter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">final_pixmap</span><span class="p">)</span>
+        <span class="n">painter</span><span class="o">.</span><span class="n">setCompositionMode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">comp_mode</span><span class="p">)</span>
+        <span class="n">painter</span><span class="o">.</span><span class="n">setBrush</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">brush</span><span class="p">)</span>
+        <span class="n">painter</span><span class="o">.</span><span class="n">setPen</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pen</span><span class="p">)</span>
+        <span class="c1">#</span>
+        <span class="n">diameter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">diameter</span>
+        <span class="n">radius</span> <span class="o">=</span> <span class="n">diameter</span> <span class="o">//</span> <span class="mi">2</span>
+        <span class="n">xywh</span> <span class="o">=</span> <span class="p">(</span><span class="n">x_pos</span> <span class="o">-</span> <span class="n">radius</span><span class="p">,</span> <span class="n">y_pos</span> <span class="o">-</span> <span class="n">radius</span><span class="p">,</span> <span class="n">diameter</span><span class="p">,</span> <span class="n">diameter</span><span class="p">)</span>
+        <span class="c1">#</span>
+        <span class="c1"># mask out the relevant region from the other mask: for that find the</span>
+        <span class="c1"># zeros, and mask out anything that IS a zero</span>
+        <span class="n">other_pm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reference_pmi</span><span class="o">.</span><span class="n">pixmap</span><span class="p">()</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QRect</span><span class="p">(</span><span class="o">*</span><span class="n">xywh</span><span class="p">))</span>
+        <span class="n">other_mask</span> <span class="o">=</span> <span class="n">other_pm</span><span class="o">.</span><span class="n">createMaskFromColor</span><span class="p">(</span>
+            <span class="n">QtGui</span><span class="o">.</span><span class="n">QColor</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">a</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span> <span class="n">mode</span><span class="o">=</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">MaskInColor</span><span class="p">)</span>
+        <span class="n">other_region</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QRegion</span><span class="p">(</span><span class="n">other_mask</span><span class="p">)</span>
+        <span class="c1"># translate region to global coords and apply mask to painter</span>
+        <span class="n">other_region</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span><span class="n">x_pos</span> <span class="o">-</span> <span class="n">radius</span><span class="p">,</span> <span class="n">y_pos</span> <span class="o">-</span> <span class="n">radius</span><span class="p">)</span>
+        <span class="n">painter</span><span class="o">.</span><span class="n">setClipRegion</span><span class="p">(</span><span class="n">other_region</span><span class="p">)</span>
+        <span class="c1"># draw and refresh</span>
+        <span class="n">painter</span><span class="o">.</span><span class="n">drawEllipse</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QRect</span><span class="p">(</span><span class="o">*</span><span class="n">xywh</span><span class="p">))</span>
+        <span class="n">painter</span><span class="o">.</span><span class="n">end</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pmi</span><span class="o">.</span><span class="n">setPixmap</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">final_pixmap</span><span class="p">)</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Andres F. R.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+    
+
+  
+
+  <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

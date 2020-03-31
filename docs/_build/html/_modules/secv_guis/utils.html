@@ -1,0 +1,375 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>secv_guis.utils &mdash; secv_guis 0.1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> secv_guis
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../secv_guis.html">secv_guis package</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">secv_guis</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>secv_guis.utils</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for secv_guis.utils</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding:utf-8 -*-</span>
+
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This module contains helper functions and utilities that may be used anywhere</span>
+<span class="sd">else in the project.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">itertools</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="c1">#</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">randomcolor</span>
+<span class="kn">from</span> <span class="nn">PIL</span> <span class="kn">import</span> <span class="n">Image</span>
+<span class="kn">import</span> <span class="nn">exifread</span>
+<span class="kn">from</span> <span class="nn">PySide2</span> <span class="kn">import</span> <span class="n">QtGui</span>
+
+
+<span class="c1"># #############################################################################</span>
+<span class="c1"># ##</span>
+<span class="c1"># #############################################################################</span>
+<div class="viewcode-block" id="RandomColorGenerator"><a class="viewcode-back" href="../../secv_guis.html#secv_guis.utils.RandomColorGenerator">[docs]</a><span class="k">class</span> <span class="nc">RandomColorGenerator</span><span class="p">(</span><span class="n">randomcolor</span><span class="o">.</span><span class="n">RandomColor</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Flexible generator for nice random colors. For more details check</span>
+<span class="sd">    https://pypi.org/project/randomcolor/</span>
+
+<span class="sd">    Usage example::</span>
+<span class="sd">      r, g, b = next(RandomColorGenerator().generate(form=&quot;rgbArray&quot;))</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="RandomColorGenerator.generate"><a class="viewcode-back" href="../../secv_guis.html#secv_guis.utils.RandomColorGenerator.generate">[docs]</a>    <span class="k">def</span> <span class="nf">generate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hue</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">luminosity</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">count</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">form</span><span class="o">=</span><span class="s2">&quot;rgbArray&quot;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :param form: Popular ones: ``rgbArray, rgba, hex, rgb``</span>
+<span class="sd">        :returns: A generator with ``count`` random colors.</span>
+
+<span class="sd">        Overriden to return a generator instead of a list. Source:</span>
+<span class="sd">          https://github.com/kevinwuhoo/randomcolor-py</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">count</span><span class="p">):</span>
+            <span class="c1"># First we pick a hue (H)</span>
+            <span class="n">H</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pick_hue</span><span class="p">(</span><span class="n">hue</span><span class="p">)</span>
+            <span class="c1"># Then use H to determine saturation (S)</span>
+            <span class="n">S</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pick_saturation</span><span class="p">(</span><span class="n">H</span><span class="p">,</span> <span class="n">hue</span><span class="p">,</span> <span class="n">luminosity</span><span class="p">)</span>
+            <span class="c1"># Then use S and H to determine brightness (B).</span>
+            <span class="n">B</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pick_brightness</span><span class="p">(</span><span class="n">H</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">luminosity</span><span class="p">)</span>
+            <span class="c1"># Then we return the HSB color in the desired format</span>
+            <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">set_format</span><span class="p">([</span><span class="n">H</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">B</span><span class="p">],</span> <span class="n">form</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="unique_filename"><a class="viewcode-back" href="../../secv_guis.html#secv_guis.utils.unique_filename">[docs]</a><span class="k">def</span> <span class="nf">unique_filename</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;_(</span><span class="si">{}</span><span class="s2">)&quot;</span><span class="p">,</span> <span class="n">max_iters</span><span class="o">=</span><span class="mi">10000</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Given a path, returns the same path if unique, or adds ``(N)`` before the</span>
+<span class="sd">    extension to make it unique, for ``N`` being the lowest integer possible</span>
+<span class="sd">    starting from 1.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
+        <span class="k">return</span> <span class="n">path</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">prefix</span><span class="p">,</span> <span class="n">ext</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">itertools</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+            <span class="n">p</span> <span class="o">=</span> <span class="n">prefix</span> <span class="o">+</span> <span class="n">suffix</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">+</span> <span class="n">ext</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">Path</span><span class="p">(</span><span class="n">p</span><span class="p">)</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
+                <span class="k">return</span> <span class="n">p</span>
+            <span class="k">assert</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">max_iters</span><span class="p">,</span> <span class="s2">&quot;max no. of iters reached!&quot;</span></div>
+
+
+<span class="c1"># #############################################################################</span>
+<span class="c1"># ## NUMPY &lt;-&gt; QT_PIXMAP INTERFACING</span>
+<span class="c1"># #############################################################################</span>
+<div class="viewcode-block" id="rgb_arr_to_rgb_pixmap"><a class="viewcode-back" href="../../secv_guis.html#secv_guis.utils.rgb_arr_to_rgb_pixmap">[docs]</a><span class="k">def</span> <span class="nf">rgb_arr_to_rgb_pixmap</span><span class="p">(</span><span class="n">arr</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :param arr: Expects a ``np.uint8(h, w, 3)`` array.</span>
+<span class="sd">    :returns: A ``QtGui.QPixmap`` in format ``RGB888(w, h)``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">h</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">c</span> <span class="o">=</span> <span class="n">arr</span><span class="o">.</span><span class="n">shape</span>
+    <span class="k">assert</span> <span class="n">c</span> <span class="o">==</span> <span class="mi">3</span><span class="p">,</span> <span class="s2">&quot;Only np.uint8 arrays of shape (h, w, 3) expected!&quot;</span>
+    <span class="n">img</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QImage</span><span class="p">(</span><span class="n">arr</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span>
+                       <span class="n">arr</span><span class="o">.</span><span class="n">strides</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QImage</span><span class="o">.</span><span class="n">Format_RGB888</span><span class="p">)</span>
+    <span class="n">pm</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QPixmap</span><span class="o">.</span><span class="n">fromImage</span><span class="p">(</span><span class="n">img</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">pm</span></div>
+
+
+<div class="viewcode-block" id="bool_arr_to_rgba_pixmap"><a class="viewcode-back" href="../../secv_guis.html#secv_guis.utils.bool_arr_to_rgba_pixmap">[docs]</a><span class="k">def</span> <span class="nf">bool_arr_to_rgba_pixmap</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">rgba</span><span class="o">=</span><span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">)):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :param arr: Expects a ``np.bool(h, w)`` array.</span>
+<span class="sd">    :param rgba: 4 values between 0 and 255. Alpha=255 means full opacity.</span>
+<span class="sd">    :returns: A ``QtGui.QPixmap`` in format ``RGBA8888(w, h)``, where the</span>
+<span class="sd">      ``false`` values are all zeros and the ``true`` values have the specified</span>
+<span class="sd">      ``rgba`` color.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># When painting ``(r, g, b, 0)`` Qt actually paints ``(0, 0, 0, 0)``. The</span>
+    <span class="c1"># workaround of inverting all pixel values before and after painting</span>
+    <span class="c1"># didn&#39;t work... TODO</span>
+    <span class="c1"># forum.qt.io/topic/73787/qimage-qpixmal-loses-alpha-color-when-drawing/5</span>
+    <span class="c1"># also topic/88000/qpainter-loosing-color-of-transparent-pixels-critical</span>
+    <span class="k">assert</span> <span class="n">rgba</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;Alpha can&#39;t be zero, Qt will delete all :(&quot;</span>
+    <span class="n">h</span><span class="p">,</span> <span class="n">w</span> <span class="o">=</span> <span class="n">arr</span><span class="o">.</span><span class="n">shape</span>
+    <span class="n">marr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">h</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
+    <span class="n">y_idxs</span><span class="p">,</span> <span class="n">x_idxs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">arr</span><span class="p">)</span>
+    <span class="n">marr</span><span class="p">[</span><span class="n">y_idxs</span><span class="p">,</span> <span class="n">x_idxs</span><span class="p">]</span> <span class="o">=</span> <span class="n">rgba</span>
+    <span class="c1"># HERE WOULD COME THE BUGFIX: try harder the &quot;invert colors&quot; approach?</span>
+    <span class="c1">#</span>
+    <span class="n">img</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QImage</span><span class="p">(</span><span class="n">marr</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="n">marr</span><span class="o">.</span><span class="n">strides</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                       <span class="n">QtGui</span><span class="o">.</span><span class="n">QImage</span><span class="o">.</span><span class="n">Format_RGBA8888</span><span class="p">)</span>
+    <span class="c1">#</span>
+    <span class="n">pm</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QPixmap</span><span class="o">.</span><span class="n">fromImage</span><span class="p">(</span><span class="n">img</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">pm</span></div>
+
+
+<div class="viewcode-block" id="pixmap_to_arr"><a class="viewcode-back" href="../../secv_guis.html#secv_guis.utils.pixmap_to_arr">[docs]</a><span class="k">def</span> <span class="nf">pixmap_to_arr</span><span class="p">(</span><span class="n">pm</span><span class="p">,</span> <span class="n">img_format</span><span class="o">=</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QImage</span><span class="o">.</span><span class="n">Format_RGBA8888</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :param pm: A Pixmap to be converted</span>
+<span class="sd">    :param img_format: The ``QtGui.QImage`` format that ``pm`` corresponds to.</span>
+<span class="sd">      https://doc.qt.io/qtforpython/PySide2/QtGui/QImage.html#image-formats</span>
+<span class="sd">    :returns: A ``np.uint8(h, w, C)`` array, where the number of channels ``C``</span>
+<span class="sd">      depends on the image format.</span>
+
+<span class="sd">    ..note::</span>
+<span class="sd">      Pixmaps are in format (w, h, ...) but arrays are returned</span>
+<span class="sd">      in ``(h, w, ...)``, as usual for numpy</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">img</span> <span class="o">=</span> <span class="n">pm</span><span class="o">.</span><span class="n">toImage</span><span class="p">()</span><span class="o">.</span><span class="n">convertToFormat</span><span class="p">(</span><span class="n">img_format</span><span class="p">)</span>
+    <span class="n">w</span><span class="p">,</span> <span class="n">h</span> <span class="o">=</span> <span class="n">img</span><span class="o">.</span><span class="n">size</span><span class="p">()</span><span class="o">.</span><span class="n">toTuple</span><span class="p">()</span>
+    <span class="n">arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">img</span><span class="o">.</span><span class="n">constBits</span><span class="p">())</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">h</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">arr</span></div>
+
+
+<span class="c1"># #############################################################################</span>
+<span class="c1"># ## IMAGE I/O</span>
+<span class="c1"># #############################################################################</span>
+<div class="viewcode-block" id="load_exif"><a class="viewcode-back" href="../../secv_guis.html#secv_guis.utils.load_exif">[docs]</a><span class="k">def</span> <span class="nf">load_exif</span><span class="p">(</span><span class="n">img_path</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :returns: A dictionary with the EXIF data contained at ``img_path``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">img_path</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">exif_dict</span> <span class="o">=</span> <span class="n">exifread</span><span class="o">.</span><span class="n">process_file</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">exif_dict</span></div>
+
+
+<div class="viewcode-block" id="load_img_and_exif"><a class="viewcode-back" href="../../secv_guis.html#secv_guis.utils.load_img_and_exif">[docs]</a><span class="k">def</span> <span class="nf">load_img_and_exif</span><span class="p">(</span><span class="n">img_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">as_np_array</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                      <span class="n">ignore_alpha</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Loads the image at given path using PIL, and its EXIF data. If the EXIF</span>
+<span class="sd">    data contains extra info about orientation, also rotates the image</span>
+<span class="sd">    accordingly.</span>
+
+<span class="sd">    :param as_np_array: If true, the image will be converted from PIL format</span>
+<span class="sd">      to np via ``np.asarray(image)``</span>
+<span class="sd">    :param ignore_alpha: If the type of the image is ``RGBA``, it will be</span>
+<span class="sd">      converted to ``RGB``.</span>
+
+<span class="sd">    :returns: A tuple ``(image, exif_dict)``.</span>
+
+<span class="sd">    Inspired in https://stackoverflow.com/a/26928142</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">exif_dict</span> <span class="o">=</span> <span class="n">load_exif</span><span class="p">(</span><span class="n">img_path</span><span class="p">)</span>
+    <span class="n">image</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">img_path</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">ignore_alpha</span> <span class="ow">and</span> <span class="n">image</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;RGBA&quot;</span><span class="p">:</span>
+        <span class="n">image</span> <span class="o">=</span> <span class="n">image</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s2">&quot;RGB&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Img orientation seems to have tag 274</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">orientation</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">exif_dict</span><span class="p">[</span><span class="s2">&quot;Image Orientation&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">orientation</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="n">image</span> <span class="o">=</span> <span class="n">image</span><span class="o">.</span><span class="n">rotate</span><span class="p">(</span><span class="mi">180</span><span class="p">,</span> <span class="n">expand</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">orientation</span> <span class="o">==</span> <span class="mi">6</span><span class="p">:</span>
+            <span class="n">image</span> <span class="o">=</span> <span class="n">image</span><span class="o">.</span><span class="n">rotate</span><span class="p">(</span><span class="mi">270</span><span class="p">,</span> <span class="n">expand</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">orientation</span> <span class="o">==</span> <span class="mi">8</span><span class="p">:</span>
+            <span class="n">image</span> <span class="o">=</span> <span class="n">image</span><span class="o">.</span><span class="n">rotate</span><span class="p">(</span><span class="mi">90</span><span class="p">,</span> <span class="n">expand</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+        <span class="k">pass</span>
+    <span class="k">if</span> <span class="n">as_np_array</span><span class="p">:</span>
+        <span class="n">image</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">image</span><span class="p">,</span> <span class="n">exif_dict</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Andres F. R.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+    
+
+  
+
+  <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

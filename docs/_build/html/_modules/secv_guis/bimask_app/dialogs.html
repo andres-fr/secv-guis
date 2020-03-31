@@ -1,0 +1,368 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>secv_guis.bimask_app.dialogs &mdash; secv_guis 0.1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> secv_guis
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../secv_guis.html">secv_guis package</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">secv_guis</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>secv_guis.bimask_app.dialogs</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for secv_guis.bimask_app.dialogs</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding:utf-8 -*-</span>
+
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This module contains definitions for different kinds of dialogs and related</span>
+<span class="sd">components that are specific for this application.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<span class="kn">from</span> <span class="nn">PySide2</span> <span class="kn">import</span> <span class="n">QtWidgets</span>
+<span class="c1">#</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">INSTRUCTIONS</span><span class="p">,</span> <span class="n">ABOUT</span>
+<span class="kn">from</span> <span class="nn">..dialogs</span> <span class="kn">import</span> <span class="n">InfoDialog</span><span class="p">,</span> <span class="n">FlexibleDialog</span>
+
+
+<span class="c1"># #############################################################################</span>
+<span class="c1"># ## HELP DIALOGS</span>
+<span class="c1"># #############################################################################</span>
+<div class="viewcode-block" id="InstructionsDialog"><a class="viewcode-back" href="../../../secv_guis.bimask_app.html#secv_guis.bimask_app.dialogs.InstructionsDialog">[docs]</a><span class="k">class</span> <span class="nc">InstructionsDialog</span><span class="p">(</span><span class="n">InfoDialog</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Info dialog showing instructions</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s2">&quot;INSTRUCTIONS&quot;</span><span class="p">,</span> <span class="n">INSTRUCTIONS</span><span class="p">,</span> <span class="n">print_msg</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="AboutDialog"><a class="viewcode-back" href="../../../secv_guis.bimask_app.html#secv_guis.bimask_app.dialogs.AboutDialog">[docs]</a><span class="k">class</span> <span class="nc">AboutDialog</span><span class="p">(</span><span class="n">InfoDialog</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Info dialog showing about section</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s2">&quot;ABOUT&quot;</span><span class="p">,</span> <span class="n">ABOUT</span><span class="p">,</span> <span class="n">print_msg</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="KeymapsDialog"><a class="viewcode-back" href="../../../secv_guis.bimask_app.html#secv_guis.bimask_app.dialogs.KeymapsDialog">[docs]</a><span class="k">class</span> <span class="nc">KeymapsDialog</span><span class="p">(</span><span class="n">FlexibleDialog</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Info dialog showing keymap list</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mappings</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mappings</span> <span class="o">=</span> <span class="n">mappings</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="n">parent</span><span class="p">)</span>
+
+<div class="viewcode-block" id="KeymapsDialog.setup_ui_body"><a class="viewcode-back" href="../../../secv_guis.bimask_app.html#secv_guis.bimask_app.dialogs.KeymapsDialog.setup_ui_body">[docs]</a>    <span class="k">def</span> <span class="nf">setup_ui_body</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">lyt</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QVBoxLayout</span><span class="p">(</span><span class="n">widget</span><span class="p">)</span>
+        <span class="c1">#</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">list_widget</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QListWidget</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">mappings</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">list_widget</span><span class="o">.</span><span class="n">addItem</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> (</span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">))</span>
+        <span class="n">lyt</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">list_widget</span><span class="p">)</span></div></div>
+
+
+<span class="c1"># #############################################################################</span>
+<span class="c1"># ## SAVE DIALOGS</span>
+<span class="c1"># #############################################################################</span>
+<div class="viewcode-block" id="SavedInfoDialog"><a class="viewcode-back" href="../../../secv_guis.bimask_app.html#secv_guis.bimask_app.dialogs.SavedInfoDialog">[docs]</a><span class="k">class</span> <span class="nc">SavedInfoDialog</span><span class="p">(</span><span class="n">InfoDialog</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Informative dialog telling about saved paths.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">save_dict</span><span class="p">,</span> <span class="n">timeout_ms</span><span class="o">=</span><span class="mi">500</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :param save_dict: A dict with ``mask_name: save_path`` pairs.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s2">&quot;SAVED&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">save_dict_to_str</span><span class="p">(</span><span class="n">save_dict</span><span class="p">),</span>
+                         <span class="n">timeout_ms</span><span class="o">=</span><span class="n">timeout_ms</span><span class="p">,</span>
+                         <span class="n">header_style</span><span class="o">=</span><span class="s2">&quot;font-weight: bold; color: green&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="SavedInfoDialog.save_dict_to_str"><a class="viewcode-back" href="../../../secv_guis.bimask_app.html#secv_guis.bimask_app.dialogs.SavedInfoDialog.save_dict_to_str">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">save_dict_to_str</span><span class="p">(</span><span class="n">save_dict</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s2">&quot;Saved </span><span class="si">{}</span><span class="s2"> to </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+                         <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">save_dict</span><span class="o">.</span><span class="n">items</span><span class="p">()])</span>
+        <span class="k">return</span> <span class="n">msg</span></div></div>
+
+
+<div class="viewcode-block" id="SaveWarningDialog"><a class="viewcode-back" href="../../../secv_guis.bimask_app.html#secv_guis.bimask_app.dialogs.SaveWarningDialog">[docs]</a><span class="k">class</span> <span class="nc">SaveWarningDialog</span><span class="p">(</span><span class="n">InfoDialog</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A dialog to be prompted when trying to delete unsaved changes.</span>
+<span class="sd">    Usage example::</span>
+
+<span class="sd">      self.dialog = SaveWarningDialog()</span>
+<span class="sd">      user_wants_to_remove = bool(self.dialog.exec_())</span>
+<span class="sd">      ...</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s2">&quot;WARNING&quot;</span><span class="p">,</span>
+                         <span class="s2">&quot;DELETE unsaved changes?&quot;</span><span class="p">,</span>
+                         <span class="s2">&quot;YES, delete and continue&quot;</span><span class="p">,</span> <span class="s2">&quot;NO, go back&quot;</span><span class="p">,</span>
+                         <span class="n">print_msg</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reject_b</span><span class="o">.</span><span class="n">setDefault</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="SavedStateTracker"><a class="viewcode-back" href="../../../secv_guis.bimask_app.html#secv_guis.bimask_app.dialogs.SavedStateTracker">[docs]</a><span class="k">class</span> <span class="nc">SavedStateTracker</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create one of these every time a new state is loaded, call ``edited`` when</span>
+<span class="sd">    the state has been changed, and ``saved`` when saved.</span>
+
+<span class="sd">    The ``saved`` function will optionally show an informative dialog.</span>
+
+<span class="sd">    Then call ``delete`` when the state is intended to be deleted. The method</span>
+<span class="sd">    makes sure that unsaved changes are only deleted with user&#39;s confirmation.</span>
+
+<span class="sd">    Note for developers:</span>
+
+<span class="sd">    State machines with callbacks are a classic recipe for spaghetti alla</span>
+<span class="sd">    callback inferno. Here we didn&#39;t provide a structured way to handle GUI</span>
+<span class="sd">    state, so we are applying this as high in the API as possible.</span>
+<span class="sd">    It works NOW, but consider restructuring it if it gets in the way.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dialog</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="c1">#</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_has_unsaved_changes</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_has_been_deleted</span> <span class="o">=</span> <span class="kc">False</span>
+
+<div class="viewcode-block" id="SavedStateTracker.edit"><a class="viewcode-back" href="../../../secv_guis.bimask_app.html#secv_guis.bimask_app.dialogs.SavedStateTracker.edit">[docs]</a>    <span class="k">def</span> <span class="nf">edit</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Call this any time the state that we want to track has been edited</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># bug factory</span>
+        <span class="c1"># assert not self._has_been_deleted, \</span>
+        <span class="c1">#     &quot;Deleted tracker cannot be further used! create a new one&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_has_unsaved_changes</span> <span class="o">=</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="SavedStateTracker.save"><a class="viewcode-back" href="../../../secv_guis.bimask_app.html#secv_guis.bimask_app.dialogs.SavedStateTracker.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">saved_dict</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ok_dialog_ms</span><span class="o">=</span><span class="mi">1000</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Call this any time the state that we want to track has been saved</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># bug factory</span>
+        <span class="c1"># assert not self._has_been_deleted, \</span>
+        <span class="c1">#     &quot;Deleted tracker cannot be further used! create a new one&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_has_unsaved_changes</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="n">saved_dict</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dialog</span> <span class="o">=</span> <span class="n">SavedInfoDialog</span><span class="p">(</span><span class="n">saved_dict</span><span class="p">,</span> <span class="n">ok_dialog_ms</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dialog</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="SavedStateTracker.delete"><a class="viewcode-back" href="../../../secv_guis.bimask_app.html#secv_guis.bimask_app.dialogs.SavedStateTracker.delete">[docs]</a>    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Call this when we intend to delete the information that we are</span>
+<span class="sd">        tracking. If unsaved changes, it will prompt the user to continue.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># bug factory</span>
+        <span class="c1"># assert not self._has_been_deleted, \</span>
+        <span class="c1">#     &quot;Deleted tracker cannot be further used! create a new one&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_has_unsaved_changes</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dialog</span> <span class="o">=</span> <span class="n">SaveWarningDialog</span><span class="p">()</span>
+            <span class="n">user_wants_delete</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dialog</span><span class="o">.</span><span class="n">exec_</span><span class="p">())</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">user_wants_delete</span><span class="p">:</span>
+                <span class="c1"># in this case the user hit this by mistake, so</span>
+                <span class="c1"># we return False and do nothing</span>
+                <span class="k">return</span> <span class="kc">False</span>
+        <span class="c1"># if we reach this point, it means that either we don&#39;t have</span>
+        <span class="c1"># unsaved changes, or we have but the user is OK with deleting them</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_has_been_deleted</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="kc">True</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Andres F. R.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    
+
+  
+
+  <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

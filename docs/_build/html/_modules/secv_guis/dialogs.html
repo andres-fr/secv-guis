@@ -1,0 +1,450 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>secv_guis.dialogs &mdash; secv_guis 0.1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> secv_guis
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../secv_guis.html">secv_guis package</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">secv_guis</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>secv_guis.dialogs</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for secv_guis.dialogs</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding:utf-8 -*-</span>
+
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This module defines several reusable dialog types.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<span class="kn">import</span> <span class="nn">traceback</span>
+<span class="kn">from</span> <span class="nn">PySide2</span> <span class="kn">import</span> <span class="n">QtCore</span><span class="p">,</span> <span class="n">QtWidgets</span>
+
+
+<span class="c1"># #############################################################################</span>
+<span class="c1"># # DIALOGS</span>
+<span class="c1"># #############################################################################</span>
+<div class="viewcode-block" id="FlexibleDialog"><a class="viewcode-back" href="../../secv_guis.html#secv_guis.dialogs.FlexibleDialog">[docs]</a><span class="k">class</span> <span class="nc">FlexibleDialog</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QDialog</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Dialog class that allows for OK, Yes/No, and timeout interactions.</span>
+<span class="sd">    To extend this dialog class, override ``setup_ui_body``, ``on_accept`` and</span>
+<span class="sd">    ``on_reject``, store the instance and call it with ``show`` or ``exec_``.</span>
+
+<span class="sd">    Note that ``setup_ui_body`` is being called IN the constructor, so any</span>
+<span class="sd">    variables that it may need when extending the class need to be set before</span>
+<span class="sd">    ``super().__init__`` is called.</span>
+
+<span class="sd">    As it can be seen here,</span>
+<span class="sd">    https://stackoverflow.com/questions/56449605/pyside2-qdialog-possible-bug</span>
+
+<span class="sd">    implementing a Dialog in PySide2 is a little tricky. These are some things</span>
+<span class="sd">    to consider:</span>
+
+<span class="sd">    * Do not implement ``accept, reject`` directly. Rather, connect the buttons</span>
+<span class="sd">      to ``accept, reject``, and then connect the ``accepted, rejected``</span>
+<span class="sd">      signals to custom methods (in this case ``on_accept, on_reject``).</span>
+
+<span class="sd">    * When calling the Dialog from the main window, the dialog must be</span>
+<span class="sd">      persistently stored as a field of the main window ``i.e. self.d = ...``.</span>
+<span class="sd">      Otherwise it will not show up. Then it can be called in modal or modeless</span>
+<span class="sd">      way, as follows: ``XXX.connect(self.d.show), ...(self.d.exec_)``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">TIMEOUT_LBL_TXT</span> <span class="o">=</span> <span class="s2">&quot;Closing in </span><span class="si">{}</span><span class="s2"> seconds...&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">accept_button_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">reject_button_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">timeout_ms</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :param str accept_button_name: Text to be shown in the accept button.</span>
+<span class="sd">        :param str reject_button_name: Text to be shown in the reject button.</span>
+<span class="sd">        :param int timeout_ms: If given, time that the dialog takes to close</span>
+<span class="sd">          automatically, in milliseconds.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
+        <span class="c1"># The body goes into ui_widget</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui_widget</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QWidget</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setup_ui_body</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ui_widget</span><span class="p">)</span>
+        <span class="c1">#</span>
+        <span class="n">main_layout</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QVBoxLayout</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">main_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ui_widget</span><span class="p">)</span>
+        <span class="c1"># Then comes the (optional) buttons section</span>
+        <span class="n">with_a</span> <span class="o">=</span> <span class="n">accept_button_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="n">with_r</span> <span class="o">=</span> <span class="n">reject_button_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">with_a</span> <span class="ow">or</span> <span class="n">with_r</span><span class="p">:</span>
+            <span class="n">button_layout</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QHBoxLayout</span><span class="p">()</span>
+            <span class="n">main_layout</span><span class="o">.</span><span class="n">addLayout</span><span class="p">(</span><span class="n">button_layout</span><span class="p">)</span>
+        <span class="c1">#</span>
+        <span class="k">if</span> <span class="n">with_a</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">accept_b</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QPushButton</span><span class="p">(</span><span class="n">accept_button_name</span><span class="p">)</span>
+            <span class="n">button_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">accept_b</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">accept_b</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">accept</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">accepted</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">on_accept</span><span class="p">)</span>
+            <span class="c1"># remove autodefault, if you want default set it explicitly</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">accept_b</span><span class="o">.</span><span class="n">setAutoDefault</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+        <span class="c1">#</span>
+        <span class="k">if</span> <span class="n">with_r</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">reject_b</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QPushButton</span><span class="p">(</span><span class="n">reject_button_name</span><span class="p">)</span>
+            <span class="n">button_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">reject_b</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">reject_b</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">reject</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">rejected</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">on_reject</span><span class="p">)</span>
+            <span class="c1"># remove autodefault, if you want default set it explicitly</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">reject_b</span><span class="o">.</span><span class="n">setAutoDefault</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+        <span class="c1"># Finally the (optional) timeout message</span>
+        <span class="k">if</span> <span class="n">timeout_ms</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">timeout_ms</span><span class="p">,</span> <span class="nb">int</span><span class="p">),</span> \
+                <span class="s2">&quot;Timeout miliseconds must be int or None!&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">timeout_lbl</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QLabel</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">TIMEOUT_LBL_TXT</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">timeout_ms</span> <span class="o">/</span> <span class="mi">1000</span><span class="p">))</span>
+            <span class="n">main_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">timeout_lbl</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">timeout_ms</span> <span class="o">=</span> <span class="n">timeout_ms</span>
+
+    <span class="k">def</span> <span class="nf">_set_timer</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">timeout_ms</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">QtCore</span><span class="o">.</span><span class="n">QTimer</span><span class="o">.</span><span class="n">singleShot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">timeout_ms</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">reject</span><span class="p">)</span>
+
+<div class="viewcode-block" id="FlexibleDialog.exec_"><a class="viewcode-back" href="../../secv_guis.html#secv_guis.dialogs.FlexibleDialog.exec_">[docs]</a>    <span class="k">def</span> <span class="nf">exec_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Start the dialog in &#39;exclusive&#39; way, blocking the rest of the app.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_timer</span><span class="p">()</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">exec_</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="FlexibleDialog.show"><a class="viewcode-back" href="../../secv_guis.html#secv_guis.dialogs.FlexibleDialog.show">[docs]</a>    <span class="k">def</span> <span class="nf">show</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Start the dialog in parallel to the rest of the app.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_timer</span><span class="p">()</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+    <span class="c1"># OVERRIDE THESE</span>
+<div class="viewcode-block" id="FlexibleDialog.setup_ui_body"><a class="viewcode-back" href="../../secv_guis.html#secv_guis.dialogs.FlexibleDialog.setup_ui_body">[docs]</a>    <span class="k">def</span> <span class="nf">setup_ui_body</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Populate the widget with your desired contents. The widget will</span>
+<span class="sd">        be above the buttons.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="FlexibleDialog.on_accept"><a class="viewcode-back" href="../../secv_guis.html#secv_guis.dialogs.FlexibleDialog.on_accept">[docs]</a>    <span class="k">def</span> <span class="nf">on_accept</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method will be called if the user presses the (optional)</span>
+<span class="sd">        accept button.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="FlexibleDialog.on_reject"><a class="viewcode-back" href="../../secv_guis.html#secv_guis.dialogs.FlexibleDialog.on_reject">[docs]</a>    <span class="k">def</span> <span class="nf">on_reject</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method will be called if the user presses the (optional)</span>
+<span class="sd">        reject button.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div></div>
+
+
+<div class="viewcode-block" id="InfoDialog"><a class="viewcode-back" href="../../secv_guis.html#secv_guis.dialogs.InfoDialog">[docs]</a><span class="k">class</span> <span class="nc">InfoDialog</span><span class="p">(</span><span class="n">FlexibleDialog</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A type of dialog that shows a header and body strings.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># If true, the user can select the text with the mouse</span>
+    <span class="n">INTERACT_HEADER</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">INTERACT_BODY</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">accept_button_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">reject_button_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">timeout_ms</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">print_msg</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                 <span class="n">header_style</span><span class="o">=</span><span class="s2">&quot;font-weight: bold; color: black&quot;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :param str header: This will be the dialog title</span>
+<span class="sd">        :param str message: This will go below the title, separated by a line</span>
+<span class="sd">        :param header_style: A CSS-like style to format the header.</span>
+
+<span class="sd">        Check ``FlexibleDialog`` docstrings for more details.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_h_txt</span> <span class="o">=</span> <span class="n">header</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_msg_txt</span> <span class="o">=</span> <span class="n">message</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">print_msg</span> <span class="o">=</span> <span class="n">print_msg</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_h_style</span> <span class="o">=</span> <span class="n">header_style</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">accept_button_name</span><span class="p">,</span> <span class="n">reject_button_name</span><span class="p">,</span> <span class="n">timeout_ms</span><span class="p">,</span>
+                         <span class="n">parent</span><span class="p">)</span>
+
+<div class="viewcode-block" id="InfoDialog.setup_ui_body"><a class="viewcode-back" href="../../secv_guis.html#secv_guis.dialogs.InfoDialog.setup_ui_body">[docs]</a>    <span class="k">def</span> <span class="nf">setup_ui_body</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">lyt</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QVBoxLayout</span><span class="p">(</span><span class="n">widget</span><span class="p">)</span>
+        <span class="c1">#</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">header_lbl</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QLabel</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_h_txt</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">body_lbl</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QLabel</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_msg_txt</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">line</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QFrame</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">line</span><span class="o">.</span><span class="n">setFrameShape</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QFrame</span><span class="o">.</span><span class="n">HLine</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">line</span><span class="o">.</span><span class="n">setFrameShadow</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QFrame</span><span class="o">.</span><span class="n">Sunken</span><span class="p">)</span>
+        <span class="c1">#</span>
+        <span class="n">lyt</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">header_lbl</span><span class="p">)</span>
+        <span class="n">lyt</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">line</span><span class="p">)</span>
+        <span class="n">lyt</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">body_lbl</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">INTERACT_HEADER</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">header_lbl</span><span class="o">.</span><span class="n">setTextInteractionFlags</span><span class="p">(</span>
+                <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">TextSelectableByMouse</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">INTERACT_BODY</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">body_lbl</span><span class="o">.</span><span class="n">setTextInteractionFlags</span><span class="p">(</span>
+                <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">TextSelectableByMouse</span><span class="p">)</span>
+        <span class="c1">#</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">header_lbl</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_h_style</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_print_if</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">print_msg</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_h_txt</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_msg_txt</span><span class="p">)</span>
+
+<div class="viewcode-block" id="InfoDialog.exec_"><a class="viewcode-back" href="../../secv_guis.html#secv_guis.dialogs.InfoDialog.exec_">[docs]</a>    <span class="k">def</span> <span class="nf">exec_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">outcome</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">exec_</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_print_if</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">outcome</span></div>
+
+<div class="viewcode-block" id="InfoDialog.show"><a class="viewcode-back" href="../../secv_guis.html#secv_guis.dialogs.InfoDialog.show">[docs]</a>    <span class="k">def</span> <span class="nf">show</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">outcome</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_print_if</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">outcome</span></div></div>
+
+
+<div class="viewcode-block" id="ExceptionDialog"><a class="viewcode-back" href="../../secv_guis.html#secv_guis.dialogs.ExceptionDialog">[docs]</a><span class="k">class</span> <span class="nc">ExceptionDialog</span><span class="p">(</span><span class="n">InfoDialog</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class is intended to be used at the main loop level,</span>
+<span class="sd">    to catch any exceptions that the app may have and show them</span>
+<span class="sd">    in a Dialog. To do that, it suffices to put the following</span>
+<span class="sd">    line anywhere before ``app.exec_()``::</span>
+
+<span class="sd">      sys.excepthook = ExceptionDialog.excepthook</span>
+
+<span class="sd">    Source: https://stackoverflow.com/a/55819545/4511978</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">DEACTIVATE</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="n">ERROR_TXT</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">ERROR!</span>
+<span class="s2">If you think this is an app error consider reporting the following</span>
+<span class="s2">to the developers (see Help-&gt;About):&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">error_msg</span><span class="p">,</span> <span class="n">timeout_ms</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check ``InfoDialog`` docstring for details.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ERROR_TXT</span><span class="p">,</span> <span class="n">error_msg</span><span class="p">,</span> <span class="s2">&quot;OK&quot;</span><span class="p">,</span>
+                         <span class="s2">&quot;Don&#39;t show errors again&quot;</span><span class="p">,</span>
+                         <span class="n">header_style</span><span class="o">=</span><span class="s2">&quot;font-weight: bold; color: red&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ExceptionDialog.on_reject"><a class="viewcode-back" href="../../secv_guis.html#secv_guis.dialogs.ExceptionDialog.on_reject">[docs]</a>    <span class="k">def</span> <span class="nf">on_reject</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        If the user presses on don&#39;t show errors again, the whole class</span>
+<span class="sd">        gets deactivated, so further created instances won&#39;t pop up.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;deactivated!&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="n">DEACTIVATE</span> <span class="o">=</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="ExceptionDialog.excepthook"><a class="viewcode-back" href="../../secv_guis.html#secv_guis.dialogs.ExceptionDialog.excepthook">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">excepthook</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_value</span><span class="p">,</span> <span class="n">exc_tb</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set this method as ``sys.excepthook = &lt;THIS_CLASS&gt;.excepthook``</span>
+<span class="sd">        somewhere before ``app.exec_()`` to wrap all Python exceptions with</span>
+<span class="sd">        this dialog.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">traceback</span><span class="o">.</span><span class="n">format_exception</span><span class="p">(</span><span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_value</span><span class="p">,</span> <span class="n">exc_tb</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">ERROR_TXT</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="c1">#</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">cls</span><span class="o">.</span><span class="n">DEACTIVATE</span><span class="p">:</span>
+            <span class="bp">cls</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span><span class="o">.</span><span class="n">exec_</span><span class="p">()</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Andres F. R.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+    
+
+  
+
+  <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

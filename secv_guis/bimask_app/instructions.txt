@@ -1,0 +1,40 @@
+This is a tool for pixel-precise, semi-automated image annotation.
+To speed up usage, please consult the keyboard shortcuts.
+
+There are 3 kinds of input for this tool: images, masks and preannotations.
+Images are always required: to load an image, select an image folder in the
+leftmost list and then double click on any entry. The corresponding image
+should appear in the right area. You can then navigate and zoom using the
+mouse wheel and right button.
+
+With each image, an empty "mask" and "preannotation mask" is loaded. You
+can load a previously saved mask by selecting an image in the second
+list. Masks are images where very non-zero pixel is considered a defect.
+
+Preannotations are matrices of floats, usually telling the probability of
+being a defect for each pixel. By using the "Thresh" slider, the user can
+decide which elements will show up as defects in the preannotation mask.
+The magnitude of the slider is in acceptance p-value, i.e., a value of
+p means that the top p region of the preannotation values will be considered
+as defects. Load the preannotations with the left list.
+
+Currently the following tools are supported to edit the masks:
+
+* Painter: Paints a circle of specified diameter into the specified mask
+* Eraser: Opposite function to painter
+* Masked painter: Like painter, but paints only in the positions where the
+  preannotation is active.
+
+The tool provides undo/redo functionality to all of them.
+
+If the preannotations have many false positives, the masked painter is most
+efficient. Otherwise erasing the preannotations is also an option.
+Once you are done, select the output folder at the bottom region, as well as
+the other options, and save the masks. They can be loaded into the second
+list in future sessions, or directly used in further applications.
+
+The masks colors are there only for convenience. They can be changed to help
+visualize the defects.
+
+This tool is a prototype. Please see the about section for any bug reports or
+inquiries. Thank you!

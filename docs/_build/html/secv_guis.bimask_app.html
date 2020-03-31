@@ -1,0 +1,713 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>secv_guis.bimask_app package &mdash; secv_guis 0.1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="secv_guis package" href="secv_guis.html" /> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> secv_guis
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="secv_guis.html">secv_guis package</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="secv_guis.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">secv_guis.bimask_app package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-secv_guis.bimask_app.dialogs">secv_guis.bimask_app.dialogs module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-secv_guis.bimask_app.main_window">secv_guis.bimask_app.main_window module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-secv_guis.bimask_app">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="secv_guis.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="secv_guis.html#module-secv_guis.base_widgets">secv_guis.base_widgets module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="secv_guis.html#module-secv_guis.commands">secv_guis.commands module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="secv_guis.html#module-secv_guis.dialogs">secv_guis.dialogs module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="secv_guis.html#module-secv_guis.masked_scene">secv_guis.masked_scene module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="secv_guis.html#module-secv_guis.mouse_event_manager">secv_guis.mouse_event_manager module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="secv_guis.html#module-secv_guis.utils">secv_guis.utils module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="secv_guis.html#module-secv_guis">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">secv_guis</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="secv_guis.html">secv_guis package</a> &raquo;</li>
+        
+      <li>secv_guis.bimask_app package</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/secv_guis.bimask_app.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="secv-guis-bimask-app-package">
+<h1>secv_guis.bimask_app package<a class="headerlink" href="#secv-guis-bimask-app-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-secv_guis.bimask_app.dialogs">
+<span id="secv-guis-bimask-app-dialogs-module"></span><h2>secv_guis.bimask_app.dialogs module<a class="headerlink" href="#module-secv_guis.bimask_app.dialogs" title="Permalink to this headline">¶</a></h2>
+<p>This module contains definitions for different kinds of dialogs and related
+components that are specific for this application.</p>
+<dl class="class">
+<dt id="secv_guis.bimask_app.dialogs.AboutDialog">
+<em class="property">class </em><code class="descclassname">secv_guis.bimask_app.dialogs.</code><code class="descname">AboutDialog</code><a class="reference internal" href="_modules/secv_guis/bimask_app/dialogs.html#AboutDialog"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#secv_guis.bimask_app.dialogs.AboutDialog" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="secv_guis.html#secv_guis.dialogs.InfoDialog" title="secv_guis.dialogs.InfoDialog"><code class="xref py py-class docutils literal notranslate"><span class="pre">secv_guis.dialogs.InfoDialog</span></code></a></p>
+<p>Info dialog showing about section</p>
+<dl class="attribute">
+<dt id="secv_guis.bimask_app.dialogs.AboutDialog.staticMetaObject">
+<code class="descname">staticMetaObject</code><em class="property"> = &lt;PySide2.QtCore.QMetaObject object&gt;</em><a class="headerlink" href="#secv_guis.bimask_app.dialogs.AboutDialog.staticMetaObject" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="secv_guis.bimask_app.dialogs.InstructionsDialog">
+<em class="property">class </em><code class="descclassname">secv_guis.bimask_app.dialogs.</code><code class="descname">InstructionsDialog</code><a class="reference internal" href="_modules/secv_guis/bimask_app/dialogs.html#InstructionsDialog"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#secv_guis.bimask_app.dialogs.InstructionsDialog" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="secv_guis.html#secv_guis.dialogs.InfoDialog" title="secv_guis.dialogs.InfoDialog"><code class="xref py py-class docutils literal notranslate"><span class="pre">secv_guis.dialogs.InfoDialog</span></code></a></p>
+<p>Info dialog showing instructions</p>
+<dl class="attribute">
+<dt id="secv_guis.bimask_app.dialogs.InstructionsDialog.staticMetaObject">
+<code class="descname">staticMetaObject</code><em class="property"> = &lt;PySide2.QtCore.QMetaObject object&gt;</em><a class="headerlink" href="#secv_guis.bimask_app.dialogs.InstructionsDialog.staticMetaObject" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="secv_guis.bimask_app.dialogs.KeymapsDialog">
+<em class="property">class </em><code class="descclassname">secv_guis.bimask_app.dialogs.</code><code class="descname">KeymapsDialog</code><span class="sig-paren">(</span><em>mappings</em>, <em>parent=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/secv_guis/bimask_app/dialogs.html#KeymapsDialog"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#secv_guis.bimask_app.dialogs.KeymapsDialog" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="secv_guis.html#secv_guis.dialogs.FlexibleDialog" title="secv_guis.dialogs.FlexibleDialog"><code class="xref py py-class docutils literal notranslate"><span class="pre">secv_guis.dialogs.FlexibleDialog</span></code></a></p>
+<p>Info dialog showing keymap list</p>
+<dl class="method">
+<dt id="secv_guis.bimask_app.dialogs.KeymapsDialog.setup_ui_body">
+<code class="descname">setup_ui_body</code><span class="sig-paren">(</span><em>widget</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/secv_guis/bimask_app/dialogs.html#KeymapsDialog.setup_ui_body"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#secv_guis.bimask_app.dialogs.KeymapsDialog.setup_ui_body" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="secv_guis.bimask_app.dialogs.KeymapsDialog.staticMetaObject">
+<code class="descname">staticMetaObject</code><em class="property"> = &lt;PySide2.QtCore.QMetaObject object&gt;</em><a class="headerlink" href="#secv_guis.bimask_app.dialogs.KeymapsDialog.staticMetaObject" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="secv_guis.bimask_app.dialogs.SaveWarningDialog">
+<em class="property">class </em><code class="descclassname">secv_guis.bimask_app.dialogs.</code><code class="descname">SaveWarningDialog</code><a class="reference internal" href="_modules/secv_guis/bimask_app/dialogs.html#SaveWarningDialog"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#secv_guis.bimask_app.dialogs.SaveWarningDialog" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="secv_guis.html#secv_guis.dialogs.InfoDialog" title="secv_guis.dialogs.InfoDialog"><code class="xref py py-class docutils literal notranslate"><span class="pre">secv_guis.dialogs.InfoDialog</span></code></a></p>
+<p>A dialog to be prompted when trying to delete unsaved changes.
+Usage example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="bp">self</span><span class="o">.</span><span class="n">dialog</span> <span class="o">=</span> <span class="n">SaveWarningDialog</span><span class="p">()</span>
+<span class="n">user_wants_to_remove</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dialog</span><span class="o">.</span><span class="n">exec_</span><span class="p">())</span>
+<span class="o">...</span>
+</pre></div>
+</div>
+<dl class="attribute">
+<dt id="secv_guis.bimask_app.dialogs.SaveWarningDialog.staticMetaObject">
+<code class="descname">staticMetaObject</code><em class="property"> = &lt;PySide2.QtCore.QMetaObject object&gt;</em><a class="headerlink" href="#secv_guis.bimask_app.dialogs.SaveWarningDialog.staticMetaObject" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="secv_guis.bimask_app.dialogs.SavedInfoDialog">
+<em class="property">class </em><code class="descclassname">secv_guis.bimask_app.dialogs.</code><code class="descname">SavedInfoDialog</code><span class="sig-paren">(</span><em>save_dict</em>, <em>timeout_ms=500</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/secv_guis/bimask_app/dialogs.html#SavedInfoDialog"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#secv_guis.bimask_app.dialogs.SavedInfoDialog" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="secv_guis.html#secv_guis.dialogs.InfoDialog" title="secv_guis.dialogs.InfoDialog"><code class="xref py py-class docutils literal notranslate"><span class="pre">secv_guis.dialogs.InfoDialog</span></code></a></p>
+<p>Informative dialog telling about saved paths.</p>
+<dl class="staticmethod">
+<dt id="secv_guis.bimask_app.dialogs.SavedInfoDialog.save_dict_to_str">
+<em class="property">static </em><code class="descname">save_dict_to_str</code><span class="sig-paren">(</span><em>save_dict</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/secv_guis/bimask_app/dialogs.html#SavedInfoDialog.save_dict_to_str"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#secv_guis.bimask_app.dialogs.SavedInfoDialog.save_dict_to_str" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="secv_guis.bimask_app.dialogs.SavedInfoDialog.staticMetaObject">
+<code class="descname">staticMetaObject</code><em class="property"> = &lt;PySide2.QtCore.QMetaObject object&gt;</em><a class="headerlink" href="#secv_guis.bimask_app.dialogs.SavedInfoDialog.staticMetaObject" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="secv_guis.bimask_app.dialogs.SavedStateTracker">
+<em class="property">class </em><code class="descclassname">secv_guis.bimask_app.dialogs.</code><code class="descname">SavedStateTracker</code><a class="reference internal" href="_modules/secv_guis/bimask_app/dialogs.html#SavedStateTracker"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#secv_guis.bimask_app.dialogs.SavedStateTracker" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Create one of these every time a new state is loaded, call <code class="docutils literal notranslate"><span class="pre">edited</span></code> when
+the state has been changed, and <code class="docutils literal notranslate"><span class="pre">saved</span></code> when saved.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">saved</span></code> function will optionally show an informative dialog.</p>
+<p>Then call <code class="docutils literal notranslate"><span class="pre">delete</span></code> when the state is intended to be deleted. The method
+makes sure that unsaved changes are only deleted with user’s confirmation.</p>
+<p>Note for developers:</p>
+<p>State machines with callbacks are a classic recipe for spaghetti alla
+callback inferno. Here we didn’t provide a structured way to handle GUI
+state, so we are applying this as high in the API as possible.
+It works NOW, but consider restructuring it if it gets in the way.</p>
+<dl class="method">
+<dt id="secv_guis.bimask_app.dialogs.SavedStateTracker.delete">
+<code class="descname">delete</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/secv_guis/bimask_app/dialogs.html#SavedStateTracker.delete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#secv_guis.bimask_app.dialogs.SavedStateTracker.delete" title="Permalink to this definition">¶</a></dt>
+<dd><p>Call this when we intend to delete the information that we are
+tracking. If unsaved changes, it will prompt the user to continue.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="secv_guis.bimask_app.dialogs.SavedStateTracker.edit">
+<code class="descname">edit</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/secv_guis/bimask_app/dialogs.html#SavedStateTracker.edit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#secv_guis.bimask_app.dialogs.SavedStateTracker.edit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Call this any time the state that we want to track has been edited</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="secv_guis.bimask_app.dialogs.SavedStateTracker.save">
+<code class="descname">save</code><span class="sig-paren">(</span><em>saved_dict=None</em>, <em>ok_dialog_ms=1000</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/secv_guis/bimask_app/dialogs.html#SavedStateTracker.save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#secv_guis.bimask_app.dialogs.SavedStateTracker.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Call this any time the state that we want to track has been saved</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-secv_guis.bimask_app.main_window">
+<span id="secv-guis-bimask-app-main-window-module"></span><h2>secv_guis.bimask_app.main_window module<a class="headerlink" href="#module-secv_guis.bimask_app.main_window" title="Permalink to this headline">¶</a></h2>
+<p>This module contains the logic and widgets pertaining to the main window
+of the bimask app: An app that allows displaying an image, editing a mask
+on it and also displaying/editing a preannotation mask.</p>
+<p>It can be used to efficiently annotate large images with pixel precision.
+Check instructions.txt for more details.</p>
+<dl class="class">
+<dt id="secv_guis.bimask_app.main_window.CrackAnnotPaintForm">
+<em class="property">class </em><code class="descclassname">secv_guis.bimask_app.main_window.</code><code class="descname">CrackAnnotPaintForm</code><span class="sig-paren">(</span><em>main_window</em>, <em>brushes</em>, <em>max_brush_size=100</em>, <em>parent=None</em>, <em>thresh_min=0</em>, <em>thresh_max=1</em>, <em>thresh_num_steps=100</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/secv_guis/bimask_app/main_window.html#CrackAnnotPaintForm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#secv_guis.bimask_app.main_window.CrackAnnotPaintForm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="secv_guis.html#secv_guis.base_widgets.MaskPaintForm" title="secv_guis.base_widgets.MaskPaintForm"><code class="xref py py-class docutils literal notranslate"><span class="pre">secv_guis.base_widgets.MaskPaintForm</span></code></a></p>
+<p>A <code class="docutils literal notranslate"><span class="pre">MaskPaintForm</span></code> that holds a reference to the app’s main window and
+connects its callbacks with the main window’s corresponding components.</p>
+<dl class="method">
+<dt id="secv_guis.bimask_app.main_window.CrackAnnotPaintForm.brush_size_changed">
+<code class="descname">brush_size_changed</code><span class="sig-paren">(</span><em>sz</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/secv_guis/bimask_app/main_window.html#CrackAnnotPaintForm.brush_size_changed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#secv_guis.bimask_app.main_window.CrackAnnotPaintForm.brush_size_changed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Setter</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="secv_guis.bimask_app.main_window.CrackAnnotPaintForm.brush_type_changed">
+<code class="descname">brush_type_changed</code><span class="sig-paren">(</span><em>idx</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/secv_guis/bimask_app/main_window.html#CrackAnnotPaintForm.brush_type_changed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#secv_guis.bimask_app.main_window.CrackAnnotPaintForm.brush_type_changed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Setter</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="secv_guis.bimask_app.main_window.CrackAnnotPaintForm.button_pressed">
+<code class="descname">button_pressed</code><span class="sig-paren">(</span><em>but</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/secv_guis/bimask_app/main_window.html#CrackAnnotPaintForm.button_pressed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#secv_guis.bimask_app.main_window.CrackAnnotPaintForm.button_pressed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Setter</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="secv_guis.bimask_app.main_window.CrackAnnotPaintForm.rgba_box_changed">
+<code class="descname">rgba_box_changed</code><span class="sig-paren">(</span><em>idx</em>, <em>r</em>, <em>g</em>, <em>b</em>, <em>a</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/secv_guis/bimask_app/main_window.html#CrackAnnotPaintForm.rgba_box_changed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#secv_guis.bimask_app.main_window.CrackAnnotPaintForm.rgba_box_changed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update corresponding mask with new RGBA color.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="secv_guis.bimask_app.main_window.CrackAnnotPaintForm.staticMetaObject">
+<code class="descname">staticMetaObject</code><em class="property"> = &lt;PySide2.QtCore.QMetaObject object&gt;</em><a class="headerlink" href="#secv_guis.bimask_app.main_window.CrackAnnotPaintForm.staticMetaObject" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="secv_guis.bimask_app.main_window.CrackAnnotPaintForm.threshold_slider_changed">
+<code class="descname">threshold_slider_changed</code><span class="sig-paren">(</span><em>idx</em>, <em>val</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/secv_guis/bimask_app/main_window.html#CrackAnnotPaintForm.threshold_slider_changed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#secv_guis.bimask_app.main_window.CrackAnnotPaintForm.threshold_slider_changed" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>idx</strong> (<em>int</em>) – The mask index. 0 is the index of the preannotation,
+1 for annotation.</li>
+<li><strong>val</strong> – The new p-value.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Update preannotation mask with new p-value by calling the
+<code class="docutils literal notranslate"><span class="pre">change_preannot_val</span></code> method of the view. Only works if idx is 0.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="secv_guis.bimask_app.main_window.FileLists">
+<em class="property">class </em><code class="descclassname">secv_guis.bimask_app.main_window.</code><code class="descname">FileLists</code><span class="sig-paren">(</span><em>parent=None, img_extensions=['.png', '.jpg', '.jpeg'], mask_extensions=None, preannot_extensions=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/secv_guis/bimask_app/main_window.html#FileLists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#secv_guis.bimask_app.main_window.FileLists" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">PySide2.QtWidgets.QWidget</span></code></p>
+<p>A cluster of 3 file lists: one for images, one for masks and one for
+preannotations.</p>
+<dl class="attribute">
+<dt id="secv_guis.bimask_app.main_window.FileLists.staticMetaObject">
+<code class="descname">staticMetaObject</code><em class="property"> = &lt;PySide2.QtCore.QMetaObject object&gt;</em><a class="headerlink" href="#secv_guis.bimask_app.main_window.FileLists.staticMetaObject" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="secv_guis.bimask_app.main_window.IntegratedDisplayView">
+<em class="property">class </em><code class="descclassname">secv_guis.bimask_app.main_window.</code><code class="descname">IntegratedDisplayView</code><span class="sig-paren">(</span><em>main_window</em>, <em>scale_percent=15</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/secv_guis/bimask_app/main_window.html#IntegratedDisplayView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#secv_guis.bimask_app.main_window.IntegratedDisplayView" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="secv_guis.html#secv_guis.masked_scene.DisplayView" title="secv_guis.masked_scene.DisplayView"><code class="xref py py-class docutils literal notranslate"><span class="pre">secv_guis.masked_scene.DisplayView</span></code></a></p>
+<p>This class implements the main component of the main window: it features a
+view of the image and the masks, together with a set of operations that can
+be done on them (painting, updating…), and the callback mechanisms to
+trigger those operations.</p>
+<dl class="method">
+<dt id="secv_guis.bimask_app.main_window.IntegratedDisplayView.change_annot_rgba">
+<code class="descname">change_annot_rgba</code><span class="sig-paren">(</span><em>rgba</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/secv_guis/bimask_app/main_window.html#IntegratedDisplayView.change_annot_rgba"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#secv_guis.bimask_app.main_window.IntegratedDisplayView.change_annot_rgba" title="Permalink to this definition">¶</a></dt>
+<dd><p>Updates the annot mask color.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="secv_guis.bimask_app.main_window.IntegratedDisplayView.change_preannot_pval">
+<code class="descname">change_preannot_pval</code><span class="sig-paren">(</span><em>keep_p_value</em>, <em>discard_p_value=0.5</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/secv_guis/bimask_app/main_window.html#IntegratedDisplayView.change_preannot_pval"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#secv_guis.bimask_app.main_window.IntegratedDisplayView.change_preannot_pval" title="Permalink to this definition">¶</a></dt>
+<dd><p>Updates the preannot-&gt;mask threshold.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="secv_guis.bimask_app.main_window.IntegratedDisplayView.change_preannot_rgba">
+<code class="descname">change_preannot_rgba</code><span class="sig-paren">(</span><em>rgba</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/secv_guis/bimask_app/main_window.html#IntegratedDisplayView.change_preannot_rgba"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#secv_guis.bimask_app.main_window.IntegratedDisplayView.change_preannot_rgba" title="Permalink to this definition">¶</a></dt>
+<dd><p>Updates the preannot mask color.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="secv_guis.bimask_app.main_window.IntegratedDisplayView.mask_from_path">
+<code class="descname">mask_from_path</code><span class="sig-paren">(</span><em>mask_path</em>, <em>rgba</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/secv_guis/bimask_app/main_window.html#IntegratedDisplayView.mask_from_path"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#secv_guis.bimask_app.main_window.IntegratedDisplayView.mask_from_path" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>mask_path</strong> – Path to an image containing a binary mask, where
+zero pixels are considered false and non-zero true.</li>
+<li><strong>rgba</strong> – Color of the loaded mask</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Loads a binary mask into the scene as an RGBA-colored mask.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="secv_guis.bimask_app.main_window.IntegratedDisplayView.new_image">
+<code class="descname">new_image</code><span class="sig-paren">(</span><em>img_path</em>, <em>initial_mask_color=(219</em>, <em>54</em>, <em>148</em>, <em>150)</em>, <em>initial_preannot_color=(102</em>, <em>214</em>, <em>123</em>, <em>100)</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/secv_guis/bimask_app/main_window.html#IntegratedDisplayView.new_image"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#secv_guis.bimask_app.main_window.IntegratedDisplayView.new_image" title="Permalink to this definition">¶</a></dt>
+<dd><p>If successful, removes all elements from the scene and the undo stack,
+and loads a fresh image and masks. If there are unsaved changes, a
+dialog asking for confirmation will pop up.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">True if the action completed successfully, False if the user
+decides to abort.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="secv_guis.bimask_app.main_window.IntegratedDisplayView.on_left_press">
+<code class="descname">on_left_press</code><span class="sig-paren">(</span><em>event</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/secv_guis/bimask_app/main_window.html#IntegratedDisplayView.on_left_press"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#secv_guis.bimask_app.main_window.IntegratedDisplayView.on_left_press" title="Permalink to this definition">¶</a></dt>
+<dd><p>Callback implementation, calls <code class="docutils literal notranslate"><span class="pre">paint_scene</span></code></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="secv_guis.bimask_app.main_window.IntegratedDisplayView.on_left_release">
+<code class="descname">on_left_release</code><span class="sig-paren">(</span><em>event</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/secv_guis/bimask_app/main_window.html#IntegratedDisplayView.on_left_release"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#secv_guis.bimask_app.main_window.IntegratedDisplayView.on_left_release" title="Permalink to this definition">¶</a></dt>
+<dd><p>If there is an open macro command, closes it and adds it to the undo
+stack</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="secv_guis.bimask_app.main_window.IntegratedDisplayView.on_move">
+<code class="descname">on_move</code><span class="sig-paren">(</span><em>event</em>, <em>has_left</em>, <em>has_mid</em>, <em>has_right</em>, <em>this_pos</em>, <em>last_pos</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/secv_guis/bimask_app/main_window.html#IntegratedDisplayView.on_move"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#secv_guis.bimask_app.main_window.IntegratedDisplayView.on_move" title="Permalink to this definition">¶</a></dt>
+<dd><p>Callback implementation, calls <code class="docutils literal notranslate"><span class="pre">paint_scene</span></code> if moving while pressing
+left.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="secv_guis.bimask_app.main_window.IntegratedDisplayView.paint_scene">
+<code class="descname">paint_scene</code><span class="sig-paren">(</span><em>x</em>, <em>y</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/secv_guis/bimask_app/main_window.html#IntegratedDisplayView.paint_scene"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#secv_guis.bimask_app.main_window.IntegratedDisplayView.paint_scene" title="Permalink to this definition">¶</a></dt>
+<dd><p>Paint to the currently selected mask, with the currently selected
+brush type, at the given position.
+The given <code class="docutils literal notranslate"><span class="pre">x,</span> <span class="pre">y</span></code> position is in ‘scene coordinates’, i.e. the
+position from a mouse event has to be translated as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">xpos</span><span class="p">,</span> <span class="n">ypos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mapToScene</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">pos</span><span class="p">())</span><span class="o">.</span><span class="n">toTuple</span><span class="p">()</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">paint_scene</span><span class="p">(</span><span class="n">xpos</span><span class="p">,</span> <span class="n">ypos</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="secv_guis.bimask_app.main_window.IntegratedDisplayView.preannot_from_path">
+<code class="descname">preannot_from_path</code><span class="sig-paren">(</span><em>preannot_path</em>, <em>rgba</em>, <em>keep_p_value=0.05</em>, <em>discard_p_value=0.5</em>, <em>normalize=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/secv_guis/bimask_app/main_window.html#IntegratedDisplayView.preannot_from_path"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#secv_guis.bimask_app.main_window.IntegratedDisplayView.preannot_from_path" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method is prototype-ish: It loads an <code class="docutils literal notranslate"><span class="pre">.npz</span></code> file with and
+‘entropy’ field, expected to have a numpy float matrix with same
+shape as the image.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="secv_guis.bimask_app.main_window.IntegratedDisplayView.staticMetaObject">
+<code class="descname">staticMetaObject</code><em class="property"> = &lt;PySide2.QtCore.QMetaObject object&gt;</em><a class="headerlink" href="#secv_guis.bimask_app.main_window.IntegratedDisplayView.staticMetaObject" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="secv_guis.bimask_app.main_window.IntegratedSaveForm">
+<em class="property">class </em><code class="descclassname">secv_guis.bimask_app.main_window.</code><code class="descname">IntegratedSaveForm</code><span class="sig-paren">(</span><em>main_window</em>, <em>default_path=None</em>, <em>save_dialog_timeout_ms=1000</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/secv_guis/bimask_app/main_window.html#IntegratedSaveForm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#secv_guis.bimask_app.main_window.IntegratedSaveForm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="secv_guis.html#secv_guis.base_widgets.SaveForm" title="secv_guis.base_widgets.SaveForm"><code class="xref py py-class docutils literal notranslate"><span class="pre">secv_guis.base_widgets.SaveForm</span></code></a></p>
+<p>A <code class="docutils literal notranslate"><span class="pre">SaveForm</span></code> that implements this app’s logic, namely, it features 2
+masks, one for annot and one for preannot, and saves them as B&amp;W png.</p>
+<dl class="method">
+<dt id="secv_guis.bimask_app.main_window.IntegratedSaveForm.save_masks">
+<code class="descname">save_masks</code><span class="sig-paren">(</span><em>states</em>, <em>suffixes</em>, <em>overwrite</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/secv_guis/bimask_app/main_window.html#IntegratedSaveForm.save_masks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#secv_guis.bimask_app.main_window.IntegratedSaveForm.save_masks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Overriden method that we don’t call directly. See <code class="docutils literal notranslate"><span class="pre">SaveForm</span></code> for
+interface details.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="secv_guis.bimask_app.main_window.IntegratedSaveForm.staticMetaObject">
+<code class="descname">staticMetaObject</code><em class="property"> = &lt;PySide2.QtCore.QMetaObject object&gt;</em><a class="headerlink" href="#secv_guis.bimask_app.main_window.IntegratedSaveForm.staticMetaObject" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="secv_guis.bimask_app.main_window.MainWindow">
+<em class="property">class </em><code class="descclassname">secv_guis.bimask_app.main_window.</code><code class="descname">MainWindow</code><span class="sig-paren">(</span><em>parent=None</em>, <em>initial_mask_color=(255</em>, <em>54</em>, <em>76</em>, <em>150)</em>, <em>initial_preannot_color=(102</em>, <em>214</em>, <em>123</em>, <em>100)</em>, <em>max_brush_size=200</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/secv_guis/bimask_app/main_window.html#MainWindow"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#secv_guis.bimask_app.main_window.MainWindow" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">PySide2.QtWidgets.QMainWindow</span></code></p>
+<p>This is the central widget for the bimask application. It is a composition
+of all the used elements, together with the logic that binds them.</p>
+<dl class="attribute">
+<dt id="secv_guis.bimask_app.main_window.MainWindow.DISCARD_P_VALUE">
+<code class="descname">DISCARD_P_VALUE</code><em class="property"> = 0.5</em><a class="headerlink" href="#secv_guis.bimask_app.main_window.MainWindow.DISCARD_P_VALUE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="secv_guis.bimask_app.main_window.MainWindow.ERASER_TXT">
+<code class="descname">ERASER_TXT</code><em class="property"> = 'Eraser'</em><a class="headerlink" href="#secv_guis.bimask_app.main_window.MainWindow.ERASER_TXT" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="secv_guis.bimask_app.main_window.MainWindow.MASKED_PAINTER_TXT">
+<code class="descname">MASKED_PAINTER_TXT</code><em class="property"> = 'Masked painter'</em><a class="headerlink" href="#secv_guis.bimask_app.main_window.MainWindow.MASKED_PAINTER_TXT" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="secv_guis.bimask_app.main_window.MainWindow.PAINTER_TXT">
+<code class="descname">PAINTER_TXT</code><em class="property"> = 'Painter'</em><a class="headerlink" href="#secv_guis.bimask_app.main_window.MainWindow.PAINTER_TXT" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="secv_guis.bimask_app.main_window.MainWindow.THRESH_MAX">
+<code class="descname">THRESH_MAX</code><em class="property"> = 1e-09</em><a class="headerlink" href="#secv_guis.bimask_app.main_window.MainWindow.THRESH_MAX" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="secv_guis.bimask_app.main_window.MainWindow.THRESH_MIN">
+<code class="descname">THRESH_MIN</code><em class="property"> = 1e-07</em><a class="headerlink" href="#secv_guis.bimask_app.main_window.MainWindow.THRESH_MIN" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="secv_guis.bimask_app.main_window.MainWindow.THRESH_NUM_STEPS">
+<code class="descname">THRESH_NUM_STEPS</code><em class="property"> = 400</em><a class="headerlink" href="#secv_guis.bimask_app.main_window.MainWindow.THRESH_NUM_STEPS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="secv_guis.bimask_app.main_window.MainWindow.keymaps">
+<code class="descname">keymaps</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/secv_guis/bimask_app/main_window.html#MainWindow.keymaps"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#secv_guis.bimask_app.main_window.MainWindow.keymaps" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">A dictionary in the form <code class="docutils literal notranslate"><span class="pre">name:</span> <span class="pre">QtGui.QKeySequence</span></code>,
+where the</td>
+</tr>
+</tbody>
+</table>
+<p>Define this GUI’s specific key mappings. Note that this method can
+be overriden to return a different mapping, but the <code class="docutils literal notranslate"><span class="pre">name``s</span> <span class="pre">have</span>
+<span class="pre">to</span> <span class="pre">remain</span> <span class="pre">identical,</span> <span class="pre">in</span> <span class="pre">order</span> <span class="pre">to</span> <span class="pre">be</span> <span class="pre">recognized</span> <span class="pre">by</span> <span class="pre">``_add_keymaps</span></code>.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="secv_guis.bimask_app.main_window.MainWindow.staticMetaObject">
+<code class="descname">staticMetaObject</code><em class="property"> = &lt;PySide2.QtCore.QMetaObject object&gt;</em><a class="headerlink" href="#secv_guis.bimask_app.main_window.MainWindow.staticMetaObject" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="secv_guis.bimask_app.main_window.MainWindow.wheelEvent">
+<code class="descname">wheelEvent</code><span class="sig-paren">(</span><em>event</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/secv_guis/bimask_app/main_window.html#MainWindow.wheelEvent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#secv_guis.bimask_app.main_window.MainWindow.wheelEvent" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <code class="docutils literal notranslate"><span class="pre">DisplayView</span></code> has zoom functionality associated to the wheel.
+Here we associate ‘brush size change’ functionality when the wheel
+is rolled while pressing Control.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="secv_guis.bimask_app.main_window.exp_lambda_estimator">
+<code class="descclassname">secv_guis.bimask_app.main_window.</code><code class="descname">exp_lambda_estimator</code><span class="sig-paren">(</span><em>elts</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/secv_guis/bimask_app/main_window.html#exp_lambda_estimator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#secv_guis.bimask_app.main_window.exp_lambda_estimator" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>elts</strong> – A collection of elements (can also be numpy).</td>
+</tr>
+</tbody>
+</table>
+<p>Given a set of elements, assumed to be exponentially distributed, returns
+the unbiased estimator for the lambda parameter of the exp distribution.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="secv_guis.bimask_app.main_window.exp_threshold">
+<code class="descclassname">secv_guis.bimask_app.main_window.</code><code class="descname">exp_threshold</code><span class="sig-paren">(</span><em>keep_p_value</em>, <em>lmbd</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/secv_guis/bimask_app/main_window.html#exp_threshold"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#secv_guis.bimask_app.main_window.exp_threshold" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>keep_p_value</strong> – Scalar in range <code class="docutils literal notranslate"><span class="pre">(0,</span> <span class="pre">1]</span></code></li>
+<li><strong>elts</strong> – collection of values, assumed to be sampled from an
+exponential distribution.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">A threshold <code class="docutils literal notranslate"><span class="pre">t</span></code>, so that the integral for <code class="docutils literal notranslate"><span class="pre">exp(lambda)</span></code> from
+t to infinity equals <code class="docutils literal notranslate"><span class="pre">keep_p_value</span></code>.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>This function assumes that the given <code class="docutils literal notranslate"><span class="pre">elts</span></code> have been sampled from an
+exponential distribution. Then inferes lambda, using the unbiased ML
+estimator (see <a class="reference external" href="https://en.wikipedia.org/wiki/Exponential_distribution">https://en.wikipedia.org/wiki/Exponential_distribution</a>)
+and returns the threshold <code class="docutils literal notranslate"><span class="pre">t</span></code> that fulfills <code class="docutils literal notranslate"><span class="pre">keep_p_value</span></code> for the
+distribution above <code class="docutils literal notranslate"><span class="pre">t</span></code>.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="secv_guis.bimask_app.main_window.pmap_to_mask">
+<code class="descclassname">secv_guis.bimask_app.main_window.</code><code class="descname">pmap_to_mask</code><span class="sig-paren">(</span><em>pmap</em>, <em>keep_highest_pval=0.05</em>, <em>discard_lowest_pval=0.5</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/secv_guis/bimask_app/main_window.html#pmap_to_mask"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#secv_guis.bimask_app.main_window.pmap_to_mask" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method performs the following steps:</p>
+<ol class="arabic simple">
+<li><dl class="first docutils">
+<dt>Assuming that pmap values are exponentially distributed, extracts the</dt>
+<dd>unbiased lambda parameter and the cumulative distribution.</dd>
+</dl>
+</li>
+<li>Applies threshold to the given low/high p-values</li>
+</ol>
+<p>This method uses the standard connected component extraction mechanism
+in Python, i.e. <code class="docutils literal notranslate"><span class="pre">scipy.ndimage.measurements.label</span></code> and
+<code class="docutils literal notranslate"><span class="pre">skimage.measure.regionprops</span></code>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>pmap</strong> – A float array of shape <code class="docutils literal notranslate"><span class="pre">h,</span> <span class="pre">w</span></code>.</li>
+<li><strong>keep_highest_pval</strong> – The p-value designing the amount of top ‘pmap’
+scores to be surely kept.</li>
+<li><strong>discard_lowest_pval</strong> – The p-value designing the amount of bottom
+‘pmap’ scores to be surely discarded.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The output mask</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-secv_guis.bimask_app">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-secv_guis.bimask_app" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="secv_guis.html" class="btn btn-neutral" title="secv_guis package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Andres F. R.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+    
+
+  
+
+  <script type="text/javascript" src="_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

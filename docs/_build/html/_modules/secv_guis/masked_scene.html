@@ -1,0 +1,457 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>secv_guis.masked_scene &mdash; secv_guis 0.1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> secv_guis
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../secv_guis.html">secv_guis package</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">secv_guis</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>secv_guis.masked_scene</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for secv_guis.masked_scene</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding:utf-8 -*-</span>
+
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This module contains the ``QGraphicsScene+QGraphicsView`` binomial, typically</span>
+<span class="sd">used in Qt apps to display and navigate images, together with some specific</span>
+<span class="sd">functionality to annotate.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">PySide2</span> <span class="kn">import</span> <span class="n">QtCore</span><span class="p">,</span> <span class="n">QtWidgets</span><span class="p">,</span> <span class="n">QtGui</span>
+<span class="kn">from</span> <span class="nn">PIL</span> <span class="kn">import</span> <span class="n">Image</span>
+<span class="c1">#</span>
+<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">RandomColorGenerator</span><span class="p">,</span> <span class="n">rgb_arr_to_rgb_pixmap</span><span class="p">,</span> \
+    <span class="n">bool_arr_to_rgba_pixmap</span><span class="p">,</span> <span class="n">pixmap_to_arr</span><span class="p">,</span> <span class="n">unique_filename</span>
+<span class="kn">from</span> <span class="nn">.mouse_event_manager</span> <span class="kn">import</span> <span class="n">MouseEventManager</span>
+
+
+<span class="c1"># #############################################################################</span>
+<span class="c1"># ## SCENE (PAINT ETC)</span>
+<span class="c1"># #############################################################################</span>
+<div class="viewcode-block" id="MaskedImageScene"><a class="viewcode-back" href="../../secv_guis.html#secv_guis.masked_scene.MaskedImageScene">[docs]</a><span class="k">class</span> <span class="nc">MaskedImageScene</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QGraphicsScene</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Basic area that allows to display a color image, together with a set of</span>
+<span class="sd">    binary masks on top of it.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">DEFAULT_MASK_ALPHA</span> <span class="o">=</span> <span class="mi">100</span>  <span class="c1"># 255 is opaque. Used if no colors are specified</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">img_arr</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :param img_arr: See ``update_image``</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">img_pmi</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">h</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">w</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="c1">#</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mask_pmis</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># pmi_ref : (r, g, b, a)</span>
+        <span class="k">if</span> <span class="n">img_arr</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">update_image</span><span class="p">(</span><span class="n">img_arr</span><span class="p">)</span>
+
+<div class="viewcode-block" id="MaskedImageScene.update_image"><a class="viewcode-back" href="../../secv_guis.html#secv_guis.masked_scene.MaskedImageScene.update_image">[docs]</a>    <span class="k">def</span> <span class="nf">update_image</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">img_arr</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Clears whole scene, and adds the given numpy array as Pixmap.</span>
+
+<span class="sd">        :param img_arr: A ``np.uint8(h, w [, ?])`` array.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">pm</span> <span class="o">=</span> <span class="n">rgb_arr_to_rgb_pixmap</span><span class="p">(</span><span class="n">img_arr</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">img_pmi</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">addPixmap</span><span class="p">(</span><span class="n">pm</span><span class="p">)</span>
+        <span class="c1">#</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">h</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">w</span> <span class="o">=</span> <span class="n">img_arr</span><span class="o">.</span><span class="n">shape</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setSceneRect</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">w</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">h</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MaskedImageScene.num_items"><a class="viewcode-back" href="../../secv_guis.html#secv_guis.masked_scene.MaskedImageScene.num_items">[docs]</a>    <span class="k">def</span> <span class="nf">num_items</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Number of items in this scene, ordered from foreground to background.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">DescendingOrder</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="MaskedImageScene.items"><a class="viewcode-back" href="../../secv_guis.html#secv_guis.masked_scene.MaskedImageScene.items">[docs]</a>    <span class="k">def</span> <span class="nf">items</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :returns: This scene&#39;s items.</span>
+<span class="sd">        :param ascending: If true, items are given from background to</span>
+<span class="sd">          foreground.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">o</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">AscendingOrder</span> <span class="k">if</span> <span class="n">ascending</span> <span class="k">else</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">AscendingOrder</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">(</span><span class="n">o</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MaskedImageScene.add_mask_pmi"><a class="viewcode-back" href="../../secv_guis.html#secv_guis.masked_scene.MaskedImageScene.add_mask_pmi">[docs]</a>    <span class="k">def</span> <span class="nf">add_mask_pmi</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mask_arr</span><span class="p">,</span> <span class="n">rgba</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">item_on_top</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :param mask_arr: A ``np.bool(h, w)`` array.</span>
+<span class="sd">        :param item_on_top: If given, mask will be added underneath that item.</span>
+<span class="sd">          Otherwise will be added on top of item stack.</span>
+<span class="sd">        :returns: The added ``PixmapItem``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># sanity check mask</span>
+        <span class="k">assert</span> <span class="n">mask_arr</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">bool</span><span class="p">,</span> <span class="s2">&quot;Mask must be np.bool(h, w)!&quot;</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">mask_arr</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;Mask must be np.bool(h, w)!&quot;</span>
+        <span class="k">assert</span> <span class="n">mask_arr</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">h</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">w</span><span class="p">),</span> \
+            <span class="s2">&quot;Mask must have same (h, w) as image!&quot;</span>
+        <span class="c1"># sanity check color</span>
+        <span class="k">if</span> <span class="n">rgba</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">r</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">RandomColorGenerator</span><span class="p">()</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="n">form</span><span class="o">=</span><span class="s2">&quot;rgbArray&quot;</span><span class="p">))</span>
+            <span class="n">rgba</span> <span class="o">=</span> <span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">DEFAULT_MASK_ALPHA</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="nb">all</span><span class="p">([</span><span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">c</span> <span class="o">&lt;=</span> <span class="mi">255</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">rgba</span><span class="p">]),</span> \
+            <span class="s2">&quot;RGBA must be in [0, 255] range!&quot;</span>
+        <span class="c1"># add pixmap: if this fails, the method raises with no side effect</span>
+        <span class="n">pm</span> <span class="o">=</span> <span class="n">bool_arr_to_rgba_pixmap</span><span class="p">(</span><span class="n">mask_arr</span><span class="p">,</span> <span class="n">rgba</span><span class="p">)</span>
+        <span class="n">pmi</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">addPixmap</span><span class="p">(</span><span class="n">pm</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mask_pmis</span><span class="p">[</span><span class="n">pmi</span><span class="p">]</span> <span class="o">=</span> <span class="n">rgba</span>
+        <span class="c1"># now we have side FX: if this fails roll back the add Pixmap</span>
+        <span class="k">if</span> <span class="n">item_on_top</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">pmi</span><span class="o">.</span><span class="n">stackBefore</span><span class="p">(</span><span class="n">item_on_top</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                <span class="c1"># roll back addition</span>
+                <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">mask_pmis</span><span class="p">[</span><span class="n">pmi</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">removeItem</span><span class="p">(</span><span class="n">pmi</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                    <span class="s2">&quot;Invalid other_item? </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">item_on_top</span><span class="p">))</span>
+        <span class="c1">#</span>
+        <span class="k">return</span> <span class="n">pmi</span></div>
+
+<div class="viewcode-block" id="MaskedImageScene.remove_mask_pmi"><a class="viewcode-back" href="../../secv_guis.html#secv_guis.masked_scene.MaskedImageScene.remove_mask_pmi">[docs]</a>    <span class="k">def</span> <span class="nf">remove_mask_pmi</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pmi</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :param pmi: The PixmapItem to remove. It has to be a mask added via</span>
+<span class="sd">          ``add_mask``</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># check that exists in our dict</span>
+        <span class="n">rgba</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mask_pmis</span><span class="p">[</span><span class="n">pmi</span><span class="p">]</span>
+        <span class="c1">#</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">removeItem</span><span class="p">(</span><span class="n">pmi</span><span class="p">)</span>
+        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">mask_pmis</span><span class="p">[</span><span class="n">pmi</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">rgba</span></div>
+
+<div class="viewcode-block" id="MaskedImageScene.replace_mask_pmi"><a class="viewcode-back" href="../../secv_guis.html#secv_guis.masked_scene.MaskedImageScene.replace_mask_pmi">[docs]</a>    <span class="k">def</span> <span class="nf">replace_mask_pmi</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pmi</span><span class="p">,</span> <span class="n">new_mask_arr</span><span class="p">,</span> <span class="n">new_rgba</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        If we call ``remove_mask`` and then ``add_mask`` fails, we will lose</span>
+<span class="sd">        the removed mask forever. This method updates the mask in an atomary</span>
+<span class="sd">        way: either succeeds or does nothing.</span>
+
+<span class="sd">        .. warning::</span>
+<span class="sd">          The input ``pmi`` gets removed from the scene and the reference</span>
+<span class="sd">          becomes invalid. Use the reference returned by this function instead.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># the problem is if we successfully remove and then fail to add. A</span>
+        <span class="c1"># fix is to first add below the to-be-removed, and then remove</span>
+        <span class="n">old_rgba</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mask_pmis</span><span class="p">[</span><span class="n">pmi</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">new_rgba</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">new_rgba</span> <span class="o">=</span> <span class="n">old_rgba</span>
+        <span class="n">new_pmi</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_mask_pmi</span><span class="p">(</span><span class="n">new_mask_arr</span><span class="p">,</span> <span class="n">rgba</span><span class="o">=</span><span class="n">new_rgba</span><span class="p">,</span>
+                                    <span class="n">item_on_top</span><span class="o">=</span><span class="n">pmi</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">remove_mask_pmi</span><span class="p">(</span><span class="n">pmi</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">new_pmi</span></div>
+
+<div class="viewcode-block" id="MaskedImageScene.pixmap_item_to_np_mask"><a class="viewcode-back" href="../../secv_guis.html#secv_guis.masked_scene.MaskedImageScene.pixmap_item_to_np_mask">[docs]</a>    <span class="k">def</span> <span class="nf">pixmap_item_to_np_mask</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pmi</span><span class="p">,</span>
+                               <span class="n">pixmap_format</span><span class="o">=</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QImage</span><span class="o">.</span><span class="n">Format_RGBA8888</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Converts given pixmap to np.bool, assuming all non-zero values</span>
+<span class="sd">        are True. Returns the bool array.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># a has shape (h, w, 4) where 4-&gt;RGBA</span>
+        <span class="n">arr</span> <span class="o">=</span> <span class="n">pixmap_to_arr</span><span class="p">(</span><span class="n">pmi</span><span class="o">.</span><span class="n">pixmap</span><span class="p">(),</span> <span class="n">pixmap_format</span><span class="p">)</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="p">(</span><span class="n">arr</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">mask</span></div>
+
+<div class="viewcode-block" id="MaskedImageScene.save_mask_as_image"><a class="viewcode-back" href="../../secv_guis.html#secv_guis.masked_scene.MaskedImageScene.save_mask_as_image">[docs]</a>    <span class="k">def</span> <span class="nf">save_mask_as_image</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pmi</span><span class="p">,</span> <span class="n">outpath</span><span class="p">,</span>
+                           <span class="n">overwrite_existing</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Output: RGB PNG image where false is black (0, 0, 0) and true is white</span>
+<span class="sd">        (255, 255, 255).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">overwrite_existing</span><span class="p">:</span>
+            <span class="n">outpath</span> <span class="o">=</span> <span class="n">unique_filename</span><span class="p">(</span><span class="n">outpath</span><span class="p">)</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pixmap_item_to_np_mask</span><span class="p">(</span><span class="n">pmi</span><span class="p">)</span>
+        <span class="c1">#</span>
+        <span class="n">img</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">fromarray</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+        <span class="n">img</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">outpath</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;saved to&quot;</span><span class="p">,</span> <span class="n">outpath</span><span class="p">)</span></div></div>
+
+
+<span class="c1"># #############################################################################</span>
+<span class="c1"># ## VIEW (EVENTS ETC)</span>
+<span class="c1"># #############################################################################</span>
+<div class="viewcode-block" id="DisplayView"><a class="viewcode-back" href="../../secv_guis.html#secv_guis.masked_scene.DisplayView">[docs]</a><span class="k">class</span> <span class="nc">DisplayView</span><span class="p">(</span><span class="n">MouseEventManager</span><span class="p">,</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QGraphicsView</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    In Qt applications, it is usual to wrap a scene with a view. This allows</span>
+<span class="sd">    to dynamically and easily change the perspective on the scene.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scene</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">scale_percent</span><span class="o">=</span><span class="mi">15</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :param scene: The scene to view. It can be set also afterwards via</span>
+<span class="sd">          ``self.setScene``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QGraphicsView</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scene</span><span class="p">,</span> <span class="n">parent</span><span class="p">)</span>
+        <span class="n">MouseEventManager</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scale_factor_up</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="nb">float</span><span class="p">(</span><span class="n">scale_percent</span><span class="p">)</span> <span class="o">/</span> <span class="mi">100</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scale_factor_down</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">scale_factor_up</span>
+        <span class="c1">#</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setVerticalScrollBarPolicy</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">ScrollBarAlwaysOff</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setHorizontalScrollBarPolicy</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">ScrollBarAlwaysOff</span><span class="p">)</span>
+        <span class="c1"># Set Anchors</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setTransformationAnchor</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QGraphicsView</span><span class="o">.</span><span class="n">NoAnchor</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setResizeAnchor</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QGraphicsView</span><span class="o">.</span><span class="n">NoAnchor</span><span class="p">)</span>
+        <span class="c1">#</span>
+        <span class="k">if</span> <span class="n">scene</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fit_in_scene</span><span class="p">()</span>
+
+<div class="viewcode-block" id="DisplayView.fit_in_scene"><a class="viewcode-back" href="../../secv_guis.html#secv_guis.masked_scene.DisplayView.fit_in_scene">[docs]</a>    <span class="k">def</span> <span class="nf">fit_in_scene</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Moves perspective so that the whole scene can be seen in view.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fitInView</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scene</span><span class="p">()</span><span class="o">.</span><span class="n">sceneRect</span><span class="p">(),</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">KeepAspectRatio</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DisplayView.zoom"><a class="viewcode-back" href="../../secv_guis.html#secv_guis.masked_scene.DisplayView.zoom">[docs]</a>    <span class="k">def</span> <span class="nf">zoom</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pos_x</span><span class="p">,</span> <span class="n">pos_y</span><span class="p">,</span> <span class="n">zoom_out</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Source for wheel zoom: https://stackoverflow.com/a/29026916/4511978</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Save the scene pos</span>
+        <span class="n">qpos</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QPoint</span><span class="p">(</span><span class="n">pos_x</span><span class="p">,</span> <span class="n">pos_y</span><span class="p">)</span>
+        <span class="n">old_pos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mapToScene</span><span class="p">(</span><span class="n">qpos</span><span class="p">)</span>
+        <span class="c1"># Zoom</span>
+        <span class="n">scale_factor</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scale_factor_down</span> <span class="k">if</span> <span class="n">zoom_out</span>
+                        <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">scale_factor_up</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scale</span><span class="p">(</span><span class="n">scale_factor</span><span class="p">,</span> <span class="n">scale_factor</span><span class="p">)</span>
+        <span class="c1"># Get the new position</span>
+        <span class="n">new_pos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mapToScene</span><span class="p">(</span><span class="n">qpos</span><span class="p">)</span>
+        <span class="c1"># Move scene to old position</span>
+        <span class="n">delta</span> <span class="o">=</span> <span class="n">new_pos</span> <span class="o">-</span> <span class="n">old_pos</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span><span class="n">delta</span><span class="o">.</span><span class="n">x</span><span class="p">(),</span> <span class="n">delta</span><span class="o">.</span><span class="n">y</span><span class="p">())</span></div>
+
+<div class="viewcode-block" id="DisplayView.shift_view"><a class="viewcode-back" href="../../secv_guis.html#secv_guis.masked_scene.DisplayView.shift_view">[docs]</a>    <span class="k">def</span> <span class="nf">shift_view</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">delta_x</span><span class="p">,</span> <span class="n">delta_y</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Move perspective to shift through the scene</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">horizontalScrollBar</span><span class="p">()</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">horizontalScrollBar</span><span class="p">()</span><span class="o">.</span><span class="n">value</span><span class="p">()</span> <span class="o">-</span> <span class="n">delta_x</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">verticalScrollBar</span><span class="p">()</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">verticalScrollBar</span><span class="p">()</span><span class="o">.</span><span class="n">value</span><span class="p">()</span> <span class="o">-</span> <span class="n">delta_y</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DisplayView.on_mid_press"><a class="viewcode-back" href="../../secv_guis.html#secv_guis.masked_scene.DisplayView.on_mid_press">[docs]</a>    <span class="k">def</span> <span class="nf">on_mid_press</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Override me</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fit_in_scene</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="DisplayView.on_wheel"><a class="viewcode-back" href="../../secv_guis.html#secv_guis.masked_scene.DisplayView.on_wheel">[docs]</a>    <span class="k">def</span> <span class="nf">on_wheel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">,</span> <span class="n">has_ctrl</span><span class="p">,</span> <span class="n">has_alt</span><span class="p">,</span> <span class="n">has_shift</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Override me</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">has_ctrl</span><span class="p">,</span> <span class="n">has_alt</span><span class="p">,</span> <span class="n">has_shift</span><span class="p">)</span> <span class="o">==</span> <span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+            <span class="n">zoom_out</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">delta</span><span class="p">()</span> <span class="o">&lt;=</span> <span class="mi">0</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">zoom</span><span class="p">(</span><span class="o">*</span><span class="n">event</span><span class="o">.</span><span class="n">pos</span><span class="p">()</span><span class="o">.</span><span class="n">toTuple</span><span class="p">(),</span> <span class="n">zoom_out</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DisplayView.on_right_press"><a class="viewcode-back" href="../../secv_guis.html#secv_guis.masked_scene.DisplayView.on_right_press">[docs]</a>    <span class="k">def</span> <span class="nf">on_right_press</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Override me</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setDragMode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ScrollHandDrag</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DisplayView.on_right_release"><a class="viewcode-back" href="../../secv_guis.html#secv_guis.masked_scene.DisplayView.on_right_release">[docs]</a>    <span class="k">def</span> <span class="nf">on_right_release</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Override me</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setDragMode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">NoDrag</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DisplayView.on_move"><a class="viewcode-back" href="../../secv_guis.html#secv_guis.masked_scene.DisplayView.on_move">[docs]</a>    <span class="k">def</span> <span class="nf">on_move</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">,</span> <span class="n">has_left</span><span class="p">,</span> <span class="n">has_mid</span><span class="p">,</span> <span class="n">has_right</span><span class="p">,</span> <span class="n">this_pos</span><span class="p">,</span> <span class="n">last_pos</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Override me</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1">#</span>
+        <span class="c1"># shift scene with right button</span>
+        <span class="k">if</span> <span class="n">has_right</span><span class="p">:</span>
+            <span class="n">delta_x</span><span class="p">,</span> <span class="n">delta_y</span> <span class="o">=</span> <span class="p">(</span><span class="n">this_pos</span> <span class="o">-</span> <span class="n">last_pos</span><span class="p">)</span><span class="o">.</span><span class="n">toTuple</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">shift_view</span><span class="p">(</span><span class="n">delta_x</span><span class="p">,</span> <span class="n">delta_y</span><span class="p">)</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Andres F. R.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+    
+
+  
+
+  <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

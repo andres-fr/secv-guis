@@ -1,0 +1,714 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>secv_guis.base_widgets &mdash; secv_guis 0.1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> secv_guis
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../secv_guis.html">secv_guis package</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">secv_guis</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>secv_guis.base_widgets</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for secv_guis.base_widgets</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding:utf-8 -*-</span>
+
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This module is a library of reusable, extendable widgets.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">PySide2</span> <span class="kn">import</span> <span class="n">QtCore</span><span class="p">,</span> <span class="n">QtWidgets</span>
+
+
+<span class="c1"># #############################################################################</span>
+<span class="c1"># # BASIC WIDGETS</span>
+<span class="c1"># #############################################################################</span>
+<div class="viewcode-block" id="FileList"><a class="viewcode-back" href="../../secv_guis.html#secv_guis.base_widgets.FileList">[docs]</a><span class="k">class</span> <span class="nc">FileList</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QWidget</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A file dialog button followed by a list that shows the files in the</span>
+<span class="sd">    selected folder.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">default_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">extensions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sort</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :param extensions: A list of string terminations to match, or ``None``</span>
+<span class="sd">          for match-all.</span>
+<span class="sd">        :param default_path: If None, &#39;home&#39; is picked as default.</span>
+<span class="sd">        :param sort: If true, contents will always be shown sorted</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sort</span> <span class="o">=</span> <span class="n">sort</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dirpath</span> <span class="o">=</span> <span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="s2">&quot;~&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">default_path</span> <span class="ow">is</span> <span class="kc">None</span>
+                        <span class="k">else</span> <span class="n">default_path</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">extensions</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="n">extensions</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">extensions</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label</span> <span class="o">=</span> <span class="n">label</span>
+        <span class="c1"># create widgets</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file_button</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QPushButton</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file_list</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QListWidget</span><span class="p">()</span>
+        <span class="c1"># add widgets to layout</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">main_layout</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QVBoxLayout</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">main_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">file_button</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">main_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">file_list</span><span class="p">)</span>
+        <span class="c1"># connect</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file_button</span><span class="o">.</span><span class="n">pressed</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_file_dialog_handler</span><span class="p">)</span>
+        <span class="c1"># track filesystem changes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file_watcher</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QFileSystemWatcher</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file_watcher</span><span class="o">.</span><span class="n">fileChanged</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+            <span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">update_path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dirpath</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file_watcher</span><span class="o">.</span><span class="n">directoryChanged</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+            <span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">update_path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dirpath</span><span class="p">))</span>
+
+<div class="viewcode-block" id="FileList.update_path"><a class="viewcode-back" href="../../secv_guis.html#secv_guis.base_widgets.FileList.update_path">[docs]</a>    <span class="k">def</span> <span class="nf">update_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dirname</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :param str dirname: The new directory path to be listed.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">file_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">dirname</span><span class="p">)</span>
+                      <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">extensions</span><span class="p">))]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file_list</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file_list</span><span class="o">.</span><span class="n">addItems</span><span class="p">(</span><span class="n">file_names</span><span class="p">)</span>
+        <span class="c1">#</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file_watcher</span><span class="o">.</span><span class="n">removePath</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dirpath</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file_watcher</span><span class="o">.</span><span class="n">addPath</span><span class="p">(</span><span class="n">dirname</span><span class="p">)</span>
+        <span class="c1">#</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dirpath</span> <span class="o">=</span> <span class="n">dirname</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sort</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">file_list</span><span class="o">.</span><span class="n">sortItems</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">AscendingOrder</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_file_dialog_handler</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Opens a file dialog which returns the selected path.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">dirname</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QFileDialog</span><span class="o">.</span><span class="n">getExistingDirectory</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dirpath</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">dirname</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">update_path</span><span class="p">(</span><span class="n">dirname</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="CheckBoxGroup"><a class="viewcode-back" href="../../secv_guis.html#secv_guis.base_widgets.CheckBoxGroup">[docs]</a><span class="k">class</span> <span class="nc">CheckBoxGroup</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QWidget</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A group of ``CheckBox`` es</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">horizontal</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="n">parent</span><span class="p">)</span>
+        <span class="n">ly</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QHBoxLayout</span><span class="p">()</span> <span class="k">if</span> <span class="n">horizontal</span> <span class="k">else</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QVBoxLayout</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">ly</span><span class="p">)</span>
+
+<div class="viewcode-block" id="CheckBoxGroup.add_box"><a class="viewcode-back" href="../../secv_guis.html#secv_guis.base_widgets.CheckBoxGroup.add_box">[docs]</a>    <span class="k">def</span> <span class="nf">add_box</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">tristate</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">initial_val</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :param bool tristate: If true, the added check box will have 3 states.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QCheckBox</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">b</span><span class="o">.</span><span class="n">setTristate</span><span class="p">(</span><span class="n">tristate</span><span class="p">)</span>
+        <span class="n">b</span><span class="o">.</span><span class="n">setChecked</span><span class="p">(</span><span class="n">initial_val</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="p">()</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">b</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="CheckBoxGroup.remove_box"><a class="viewcode-back" href="../../secv_guis.html#secv_guis.base_widgets.CheckBoxGroup.remove_box">[docs]</a>    <span class="k">def</span> <span class="nf">remove_box</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :param int idx: Boxes are added in increasing index order, so this</span>
+<span class="sd">          the lower this index the &#39;older&#39; the box that is being removed.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="p">()</span><span class="o">.</span><span class="n">takeAt</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
+        <span class="n">b</span><span class="o">.</span><span class="n">widget</span><span class="p">()</span><span class="o">.</span><span class="n">setParent</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QWidget</span><span class="p">())</span>  <span class="c1"># this is needed...</span></div>
+
+<div class="viewcode-block" id="CheckBoxGroup.state"><a class="viewcode-back" href="../../secv_guis.html#secv_guis.base_widgets.CheckBoxGroup.state">[docs]</a>    <span class="k">def</span> <span class="nf">state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :returns: A list with all the current states, in index order.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">ly</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="p">()</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">ly</span><span class="o">.</span><span class="n">itemAt</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">.</span><span class="n">widget</span><span class="p">()</span><span class="o">.</span><span class="n">checkState</span><span class="p">()</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ly</span><span class="o">.</span><span class="n">count</span><span class="p">())]</span></div></div>
+
+
+<span class="c1"># #############################################################################</span>
+<span class="c1"># # PAINTING SECTION</span>
+<span class="c1"># #############################################################################</span>
+<div class="viewcode-block" id="RGBASpinbox"><a class="viewcode-back" href="../../secv_guis.html#secv_guis.base_widgets.RGBASpinbox">[docs]</a><span class="k">class</span> <span class="nc">RGBASpinbox</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QWidget</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A cluster of 4 [0-255] spin boxes, representing (and having) an RGBA</span>
+<span class="sd">    color. Use ``self.connect`` to wire this widget to any method.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">initial_rgba</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">),</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">min_alpha</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">max_alpha</span><span class="o">=</span><span class="mi">255</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">main_layout</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QHBoxLayout</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="c1"># create widgets</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QLabel</span><span class="p">(</span><span class="s2">&quot;RGBA:&quot;</span><span class="p">)</span>
+        <span class="n">r</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">a</span> <span class="o">=</span> <span class="n">initial_rgba</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">r</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_make_box</span><span class="p">(</span><span class="n">initial</span><span class="o">=</span><span class="n">r</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">g</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_make_box</span><span class="p">(</span><span class="n">initial</span><span class="o">=</span><span class="n">g</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">b</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_make_box</span><span class="p">(</span><span class="n">initial</span><span class="o">=</span><span class="n">b</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">a</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_make_box</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">min_alpha</span><span class="p">,</span> <span class="n">max_alpha</span><span class="p">)</span>
+        <span class="c1"># add widgets to layout</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">main_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">main_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">r</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">main_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">main_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">main_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">a</span><span class="p">)</span>
+        <span class="c1"># connect widgets to color listener</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">r</span><span class="o">.</span><span class="n">valueChanged</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+            <span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_set_currentcolor_stylesheet</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">valueChanged</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+            <span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_set_currentcolor_stylesheet</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="o">.</span><span class="n">valueChanged</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+            <span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_set_currentcolor_stylesheet</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">a</span><span class="o">.</span><span class="n">valueChanged</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+            <span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_set_currentcolor_stylesheet</span><span class="p">())</span>
+        <span class="c1">#</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_currentcolor_stylesheet</span><span class="p">()</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_make_box</span><span class="p">(</span><span class="n">initial</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">minimum</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">maximum</span><span class="o">=</span><span class="mi">255</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">8</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QSpinBox</span><span class="p">()</span>
+        <span class="n">b</span><span class="o">.</span><span class="n">setRange</span><span class="p">(</span><span class="n">minimum</span><span class="p">,</span> <span class="n">maximum</span><span class="p">)</span>
+        <span class="n">b</span><span class="o">.</span><span class="n">setSingleStep</span><span class="p">(</span><span class="n">step</span><span class="p">)</span>
+        <span class="n">b</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="n">initial</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">b</span>
+
+<div class="viewcode-block" id="RGBASpinbox.get_current_rgba"><a class="viewcode-back" href="../../secv_guis.html#secv_guis.base_widgets.RGBASpinbox.get_current_rgba">[docs]</a>    <span class="k">def</span> <span class="nf">get_current_rgba</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :returns: Current state as ``(r, g, b, a)`` numeric tuple.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">r</span><span class="o">.</span><span class="n">value</span><span class="p">()</span>
+        <span class="n">g</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">value</span><span class="p">()</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="o">.</span><span class="n">value</span><span class="p">()</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">a</span><span class="o">.</span><span class="n">value</span><span class="p">()</span>
+        <span class="k">return</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">a</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_set_currentcolor_stylesheet</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">r</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_current_rgba</span><span class="p">()</span>
+        <span class="n">ssheet</span> <span class="o">=</span> <span class="s2">&quot;QSpinBox {color: rgb(</span><span class="si">%d</span><span class="s2">, </span><span class="si">%d</span><span class="s2">, </span><span class="si">%d</span><span class="s2">)}&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">r</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="n">ssheet</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="n">ssheet</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="n">ssheet</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">a</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="n">ssheet</span><span class="p">)</span>
+
+<div class="viewcode-block" id="RGBASpinbox.connect"><a class="viewcode-back" href="../../secv_guis.html#secv_guis.base_widgets.RGBASpinbox.connect">[docs]</a>    <span class="k">def</span> <span class="nf">connect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fn</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :param fn: A function to connect this widget to. It must have the</span>
+<span class="sd">          following signature``fn(idx, r, g, b, a)``.</span>
+
+<span class="sd">        When calling ``self.connect(f)``, any value changes in R, G, B or</span>
+<span class="sd">        A will trigger ``f(r, g, b, a)`` with the changed values</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># NOTE THAT LAMBDAS WITH SELF INSIDE WILL PREVENT THE WIDGET</span>
+        <span class="c1"># TO BE GARBAGE-COLLECTED: https://stackoverflow.com/a/48501804/4511978</span>
+        <span class="c1"># THIS IS BAD FOR WIDGETS THAT GET INSTANTIATED MANY TIMES</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">r</span><span class="o">.</span><span class="n">valueChanged</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">fn</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">get_current_rgba</span><span class="p">()))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">valueChanged</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">fn</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">get_current_rgba</span><span class="p">()))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="o">.</span><span class="n">valueChanged</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">fn</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">get_current_rgba</span><span class="p">()))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">a</span><span class="o">.</span><span class="n">valueChanged</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">fn</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">get_current_rgba</span><span class="p">()))</span></div></div>
+
+
+<div class="viewcode-block" id="MaskPaintForm"><a class="viewcode-back" href="../../secv_guis.html#secv_guis.base_widgets.MaskPaintForm">[docs]</a><span class="k">class</span> <span class="nc">MaskPaintForm</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QWidget</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This widget contains one section for the masks and one for the painter.</span>
+<span class="sd">    The mask section contains a set of elements, one per mask. A radio button</span>
+<span class="sd">    selects the currently active mask, and each mask features an RGBA box</span>
+<span class="sd">    and a thershold slider. The painter section contains a ComboBox to select</span>
+<span class="sd">    the painter type, and a slider for the painter size.</span>
+
+<span class="sd">    To use it in specific applications override ``button_pressed,</span>
+<span class="sd">    combo_box_changed, rgba_box_changed...``</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">brush_names</span><span class="p">,</span> <span class="n">max_brush_size</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">thresh_min</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">thresh_max</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">thresh_num_steps</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+                 <span class="n">min_alpha</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">max_alpha</span><span class="o">=</span><span class="mi">255</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
+        <span class="c1"># self.masks = masks</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">brush_names</span> <span class="o">=</span> <span class="n">brush_names</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_brush_size</span> <span class="o">=</span> <span class="n">max_brush_size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">thresh_min</span> <span class="o">=</span> <span class="n">thresh_min</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">thresh_max</span> <span class="o">=</span> <span class="n">thresh_max</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">thresh_num_steps</span> <span class="o">=</span> <span class="n">thresh_num_steps</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">min_alpha</span> <span class="o">=</span> <span class="n">min_alpha</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_alpha</span> <span class="o">=</span> <span class="n">max_alpha</span>
+        <span class="c1">#</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_buttons</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_boxes</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_labels</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sliders</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="c1">#</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">paint_button_group</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QButtonGroup</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_define_layout</span><span class="p">()</span>
+        <span class="c1"># add connections</span>
+        <span class="c1"># NOTE THAT LAMBDAS WITH SELF INSIDE WILL PREVENT THE WIDGET</span>
+        <span class="c1"># TO BE GARBAGE-COLLECTED: https://stackoverflow.com/a/48501804/4511978</span>
+        <span class="c1"># THIS IS BAD FOR WIDGETS THAT GET INSTANTIATED MANY TIMES</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">paint_button_group</span><span class="o">.</span><span class="n">buttonClicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+            <span class="k">lambda</span> <span class="n">_</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">button_pressed</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">paint_button_group</span><span class="o">.</span><span class="n">checkedButton</span><span class="p">()))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">brush_combo_box</span><span class="o">.</span><span class="n">currentIndexChanged</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">brush_type_changed</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">brush_size_slider</span><span class="o">.</span><span class="n">valueChanged</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_update_brush_size</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_define_layout</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># make brush selector and size widgets</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">brush_combo_box</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QComboBox</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">brush_combo_box</span><span class="o">.</span><span class="n">addItems</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">brush_names</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">brush_size_label</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QLabel</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">brush_size_slider</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QSlider</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>  <span class="c1"># vertical</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">brush_size_slider</span><span class="o">.</span><span class="n">setMinimum</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">brush_size_slider</span><span class="o">.</span><span class="n">setMaximum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max_brush_size</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">brush_size_slider</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max_brush_size</span> <span class="o">//</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">brush_size_slider</span><span class="o">.</span><span class="n">setSingleStep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_brush_size_label</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">brush_size_slider</span><span class="o">.</span><span class="n">value</span><span class="p">())</span>
+        <span class="c1"># Layout hierarchy:</span>
+        <span class="n">main_layout</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QHBoxLayout</span><span class="p">()</span>
+        <span class="c1"># this is modified with add/remove</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">masks_layout</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QVBoxLayout</span><span class="p">()</span>
+        <span class="c1"># make sub-layout with [brush_type; brush_size]</span>
+        <span class="n">brush_layout</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QVBoxLayout</span><span class="p">()</span>
+        <span class="n">brush_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">brush_combo_box</span><span class="p">)</span>
+        <span class="n">brush_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">brush_size_label</span><span class="p">)</span>
+        <span class="n">brush_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">brush_size_slider</span><span class="p">)</span>
+        <span class="n">brush_layout</span><span class="o">.</span><span class="n">setAlignment</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">AlignRight</span><span class="p">)</span>
+        <span class="c1"># connect layout hierarchy</span>
+        <span class="n">main_layout</span><span class="o">.</span><span class="n">addLayout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">masks_layout</span><span class="p">)</span>
+        <span class="n">main_layout</span><span class="o">.</span><span class="n">addLayout</span><span class="p">(</span><span class="n">brush_layout</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">main_layout</span><span class="p">)</span>
+
+<div class="viewcode-block" id="MaskPaintForm.add_item"><a class="viewcode-back" href="../../secv_guis.html#secv_guis.base_widgets.MaskPaintForm.add_item">[docs]</a>    <span class="k">def</span> <span class="nf">add_item</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">rgba</span><span class="p">,</span> <span class="n">slider_visible</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">activate</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add an element to the &#39;mask&#39; section, with the given name and color.</span>
+
+<span class="sd">        :param slider_visible: If false, the slider will be still there but</span>
+<span class="sd">          hidden.</span>
+<span class="sd">        :param activate: Once created, select this item in the radio buttons.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># sub-layout with 2-row elts: [button, colordialog; label, threshold]</span>
+        <span class="n">but</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QRadioButton</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">box</span> <span class="o">=</span> <span class="n">RGBASpinbox</span><span class="p">(</span><span class="n">rgba</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_alpha</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_alpha</span><span class="p">)</span>
+        <span class="n">sl</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QSlider</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">orientation</span><span class="o">=</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">Horizontal</span><span class="p">)</span>
+        <span class="n">lbl</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QLabel</span><span class="p">()</span>
+        <span class="n">sl</span><span class="o">.</span><span class="n">setVisible</span><span class="p">(</span><span class="n">slider_visible</span><span class="p">)</span>
+        <span class="n">lbl</span><span class="o">.</span><span class="n">setVisible</span><span class="p">(</span><span class="n">slider_visible</span><span class="p">)</span>
+        <span class="n">sl</span><span class="o">.</span><span class="n">setMinimum</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">sl</span><span class="o">.</span><span class="n">setMaximum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">thresh_num_steps</span><span class="p">)</span>
+        <span class="n">sl</span><span class="o">.</span><span class="n">setSingleStep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">sl</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="n">sl</span><span class="o">.</span><span class="n">maximum</span><span class="p">()</span> <span class="o">//</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="c1">#</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_buttons</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">but</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_boxes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">box</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_labels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">lbl</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sliders</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sl</span><span class="p">)</span>
+        <span class="c1"># local layout hierarchy</span>
+        <span class="n">lyt</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QVBoxLayout</span><span class="p">()</span>
+        <span class="n">top</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QHBoxLayout</span><span class="p">()</span>
+        <span class="n">bottom</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QHBoxLayout</span><span class="p">()</span>
+        <span class="n">top</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">but</span><span class="p">)</span>
+        <span class="n">top</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">box</span><span class="p">)</span>
+        <span class="n">bottom</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">lbl</span><span class="p">)</span>
+        <span class="n">bottom</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">sl</span><span class="p">)</span>
+        <span class="n">lyt</span><span class="o">.</span><span class="n">addLayout</span><span class="p">(</span><span class="n">top</span><span class="p">)</span>
+        <span class="n">lyt</span><span class="o">.</span><span class="n">addLayout</span><span class="p">(</span><span class="n">bottom</span><span class="p">)</span>
+        <span class="c1"># add local hierarchy to main layout and button to group</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">masks_layout</span><span class="o">.</span><span class="n">addLayout</span><span class="p">(</span><span class="n">lyt</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">paint_button_group</span><span class="o">.</span><span class="n">addButton</span><span class="p">(</span><span class="n">but</span><span class="p">)</span>
+        <span class="c1"># add connections</span>
+        <span class="n">box</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+            <span class="k">lambda</span> <span class="n">r</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">a</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_rgba_box_changed</span><span class="p">(</span><span class="n">box</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">a</span><span class="p">))</span>
+        <span class="n">sl</span><span class="o">.</span><span class="n">valueChanged</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+            <span class="k">lambda</span> <span class="n">val</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_threshold_slider_changed</span><span class="p">(</span><span class="n">sl</span><span class="p">,</span> <span class="n">val</span><span class="p">))</span>
+        <span class="c1"># initialize label</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_thresh_label</span><span class="p">(</span><span class="n">lbl</span><span class="p">,</span> <span class="n">sl</span><span class="o">.</span><span class="n">value</span><span class="p">())</span>
+        <span class="c1">#</span>
+        <span class="k">if</span> <span class="n">activate</span><span class="p">:</span>
+            <span class="n">but</span><span class="o">.</span><span class="n">click</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="MaskPaintForm.remove_item"><a class="viewcode-back" href="../../secv_guis.html#secv_guis.base_widgets.MaskPaintForm.remove_item">[docs]</a>    <span class="k">def</span> <span class="nf">remove_item</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Remove an element from the &#39;mask&#39; section by index. Indexes are in</span>
+<span class="sd">        increasing order, so lowest is oldest.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># remove from self placeholders</span>
+        <span class="n">but</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_buttons</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
+        <span class="n">box</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_boxes</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
+        <span class="n">lbl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_labels</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
+        <span class="n">sl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sliders</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
+        <span class="n">lyt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">masks_layout</span><span class="o">.</span><span class="n">takeAt</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
+        <span class="c1"># reassign dummy parent to remove from QT placeholders</span>
+        <span class="n">w</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QWidget</span><span class="p">()</span>  <span class="c1"># this is needed...</span>
+        <span class="n">but</span><span class="o">.</span><span class="n">setParent</span><span class="p">(</span><span class="n">w</span><span class="p">)</span>
+        <span class="n">box</span><span class="o">.</span><span class="n">setParent</span><span class="p">(</span><span class="n">w</span><span class="p">)</span>
+        <span class="n">lbl</span><span class="o">.</span><span class="n">setParent</span><span class="p">(</span><span class="n">w</span><span class="p">)</span>
+        <span class="n">sl</span><span class="o">.</span><span class="n">setParent</span><span class="p">(</span><span class="n">w</span><span class="p">)</span>
+        <span class="n">lyt</span><span class="o">.</span><span class="n">setParent</span><span class="p">(</span><span class="n">w</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MaskPaintForm.slider_to_p_val"><a class="viewcode-back" href="../../secv_guis.html#secv_guis.base_widgets.MaskPaintForm.slider_to_p_val">[docs]</a>    <span class="k">def</span> <span class="nf">slider_to_p_val</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sl_val</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Since the slider goes from 0 to ``thresh_num_steps``, this function</span>
+<span class="sd">        linearly interpolates the, so that 0 maps to ``thresh_min`` and</span>
+<span class="sd">        ``thresh_num_steps`` maps to ``thresh_max``. Note that min does not</span>
+<span class="sd">        neccesarily have to be smaller than max.</span>
+
+<span class="sd">        :param int sl_val: The actual slider value from 0 to num_steps.</span>
+<span class="sd">        :returns: The converted and interpolated value.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">delta</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">sl_val</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">thresh_num_steps</span>
+        <span class="n">pval</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">thresh_min</span> <span class="o">+</span> <span class="n">delta</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">thresh_max</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">thresh_min</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">pval</span></div>
+
+    <span class="k">def</span> <span class="nf">_set_thresh_label</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lbl</span><span class="p">,</span> <span class="n">sl_val</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">slider_to_p_val</span><span class="p">(</span><span class="n">sl_val</span><span class="p">)</span>
+        <span class="n">lbl</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="s2">&quot;Thresh: </span><span class="si">{:.10f}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">t</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">t</span>
+
+    <span class="k">def</span> <span class="nf">_set_brush_size_label</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sl_val</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">brush_size_label</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="s2">&quot;Brush size: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">sl_val</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">_handle_threshold_slider_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sl</span><span class="p">,</span> <span class="n">sl_val</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sliders</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">sl</span><span class="p">)</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_set_thresh_label</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_labels</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> <span class="n">sl_val</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">threshold_slider_changed</span><span class="p">(</span><span class="n">idx</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_handle_rgba_box_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">box</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">a</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_boxes</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">box</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rgba_box_changed</span><span class="p">(</span><span class="n">idx</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">a</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_update_brush_size</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sl_val</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_brush_size_label</span><span class="p">(</span><span class="n">sl_val</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">brush_size_changed</span><span class="p">(</span><span class="n">sl_val</span><span class="p">)</span>
+
+<div class="viewcode-block" id="MaskPaintForm.button_pressed"><a class="viewcode-back" href="../../secv_guis.html#secv_guis.base_widgets.MaskPaintForm.button_pressed">[docs]</a>    <span class="k">def</span> <span class="nf">button_pressed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">but</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Override me!</span>
+
+<span class="sd">        :param int idx: Starts with 0 and respects ordering given at</span>
+<span class="sd">          construction. So when overriding this method, you can assume</span>
+<span class="sd">          that 0 will correspond to the firstly added element, and</span>
+<span class="sd">          so on. Implementation example::</span>
+
+<span class="sd">            i = self._buttons.index(but)</span>
+<span class="sd">            print(&quot;button pressed: &gt;&gt;&gt;&quot;, i, but.text())</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="MaskPaintForm.brush_type_changed"><a class="viewcode-back" href="../../secv_guis.html#secv_guis.base_widgets.MaskPaintForm.brush_type_changed">[docs]</a>    <span class="k">def</span> <span class="nf">brush_type_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Override me!</span>
+
+<span class="sd">        :param int idx: Starts with 0 and respects ordering given at</span>
+<span class="sd">          construction. So when overriding this method, you can assume</span>
+<span class="sd">          that 0 will correspond to the firstly added element, and</span>
+<span class="sd">          so on.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="MaskPaintForm.brush_size_changed"><a class="viewcode-back" href="../../secv_guis.html#secv_guis.base_widgets.MaskPaintForm.brush_size_changed">[docs]</a>    <span class="k">def</span> <span class="nf">brush_size_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sz</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Override me!</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="MaskPaintForm.rgba_box_changed"><a class="viewcode-back" href="../../secv_guis.html#secv_guis.base_widgets.MaskPaintForm.rgba_box_changed">[docs]</a>    <span class="k">def</span> <span class="nf">rgba_box_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">a</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Override me!</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="MaskPaintForm.threshold_slider_changed"><a class="viewcode-back" href="../../secv_guis.html#secv_guis.base_widgets.MaskPaintForm.threshold_slider_changed">[docs]</a>    <span class="k">def</span> <span class="nf">threshold_slider_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Override me!</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div></div>
+
+
+<span class="c1"># #############################################################################</span>
+<span class="c1"># # SAVING SECTON</span>
+<span class="c1"># #############################################################################</span>
+<div class="viewcode-block" id="SaveForm"><a class="viewcode-back" href="../../secv_guis.html#secv_guis.base_widgets.SaveForm">[docs]</a><span class="k">class</span> <span class="nc">SaveForm</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QWidget</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A formulary providing functionality for selecting what to save, where to</span>
+<span class="sd">    save, the output suffix and overwriting policy.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">SAVE_TEXT</span> <span class="o">=</span> <span class="s2">&quot;Save</span><span class="se">\n</span><span class="s2">selected&quot;</span>
+    <span class="n">DIALOG_TEXT</span> <span class="o">=</span> <span class="s2">&quot;Output</span><span class="se">\n</span><span class="s2">folder&quot;</span>
+    <span class="n">OVERWRITE_TEXT</span> <span class="o">=</span> <span class="s2">&quot;Overwrite</span><span class="se">\n</span><span class="s2">saved&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">default_path</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :param str default_path: If not given, &#39;home&#39; is picked as default.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">save_path</span> <span class="o">=</span> <span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="s2">&quot;~&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">default_path</span> <span class="ow">is</span> <span class="kc">None</span>
+                          <span class="k">else</span> <span class="n">default_path</span><span class="p">)</span>
+        <span class="c1"># create widgets</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">save_group</span> <span class="o">=</span> <span class="n">CheckBoxGroup</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">text_boxes</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QVBoxLayout</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file_dialog_button</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QPushButton</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">DIALOG_TEXT</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">save_button</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QPushButton</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">SAVE_TEXT</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">overwrite_button</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QCheckBox</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">OVERWRITE_TEXT</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">overwrite_button</span><span class="o">.</span><span class="n">setChecked</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="c1"># build layout hierarchy</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">main_layout</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QHBoxLayout</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">main_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">save_group</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">main_layout</span><span class="o">.</span><span class="n">addLayout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">text_boxes</span><span class="p">)</span>
+        <span class="c1">#</span>
+        <span class="n">lyt</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QVBoxLayout</span><span class="p">()</span>
+        <span class="n">lyt</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">file_dialog_button</span><span class="p">)</span>
+        <span class="n">lyt</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">save_button</span><span class="p">)</span>
+        <span class="n">lyt</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">overwrite_button</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">main_layout</span><span class="o">.</span><span class="n">addLayout</span><span class="p">(</span><span class="n">lyt</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">main_layout</span><span class="p">)</span>
+        <span class="c1"># add connections</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file_dialog_button</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_change_save_path</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">save_button</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_handle_save_masks</span><span class="p">)</span>
+
+<div class="viewcode-block" id="SaveForm.add_checkbox"><a class="viewcode-back" href="../../secv_guis.html#secv_guis.base_widgets.SaveForm.add_checkbox">[docs]</a>    <span class="k">def</span> <span class="nf">add_checkbox</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">checkbox_name</span><span class="p">,</span> <span class="n">initial_val</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">initial_txt</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Adds an element that can be selected to be saved.</span>
+
+<span class="sd">        :param checkbox_name: The element identifier</span>
+<span class="sd">        :param initial_txt: The initial suffix to be appended to the files. If</span>
+<span class="sd">          none is given, the ``checkbox_name`` is picked as default. The user</span>
+<span class="sd">          can change this from the GUI.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">initial_txt</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">initial_txt</span> <span class="o">=</span> <span class="n">checkbox_name</span>
+        <span class="n">tb</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QLineEdit</span><span class="p">(</span><span class="n">initial_txt</span><span class="p">)</span>
+        <span class="c1">#</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">save_group</span><span class="o">.</span><span class="n">add_box</span><span class="p">(</span><span class="n">checkbox_name</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="n">initial_val</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">text_boxes</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">tb</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_change_save_path</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">dir_name</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QFileDialog</span><span class="o">.</span><span class="n">getExistingDirectory</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">DIALOG_TEXT</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">save_path</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">dir_name</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">save_path</span> <span class="o">=</span> <span class="n">dir_name</span>
+
+    <span class="k">def</span> <span class="nf">_handle_save_masks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">states</span> <span class="o">=</span> <span class="p">[</span><span class="n">s</span> <span class="o">==</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">CheckState</span><span class="o">.</span><span class="n">Checked</span>
+                  <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">save_group</span><span class="o">.</span><span class="n">state</span><span class="p">()]</span>
+        <span class="n">suffixes</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">text_boxes</span><span class="o">.</span><span class="n">itemAt</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">.</span><span class="n">widget</span><span class="p">()</span><span class="o">.</span><span class="n">text</span><span class="p">()</span>
+                    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">text_boxes</span><span class="o">.</span><span class="n">count</span><span class="p">())]</span>
+        <span class="n">overwrite</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">overwrite_button</span><span class="o">.</span><span class="n">isChecked</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">save_masks</span><span class="p">(</span><span class="n">states</span><span class="p">,</span> <span class="n">suffixes</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">)</span>
+
+<div class="viewcode-block" id="SaveForm.save_masks"><a class="viewcode-back" href="../../secv_guis.html#secv_guis.base_widgets.SaveForm.save_masks">[docs]</a>    <span class="k">def</span> <span class="nf">save_masks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">states</span><span class="p">,</span> <span class="n">suffixes</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :param states: A list with booleans, representing the checkbox</span>
+<span class="sd">          states for the contained elements.</span>
+<span class="sd">        :param suffixes: A list with the corresponding suffixes</span>
+<span class="sd">        :param overwrite: A boolean determining whether the &#39;overwrite&#39;</span>
+<span class="sd">          checkbox has been activated.</span>
+
+<span class="sd">        Override me!</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;check boxes:&quot;</span><span class="p">,</span> <span class="n">states</span><span class="p">,</span> <span class="s2">&quot;suffixes:&quot;</span><span class="p">,</span> <span class="n">suffixes</span><span class="p">,</span>
+              <span class="s2">&quot;out path:&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">save_path</span><span class="p">,</span> <span class="s2">&quot;overwrite:&quot;</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">)</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Andres F. R.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+    
+
+  
+
+  <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
