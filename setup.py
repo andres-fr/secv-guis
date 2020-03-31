@@ -22,7 +22,7 @@ def setup():
     setuptools.setup(
         name="secv_guis",
         # the version is automatically handled by "bumpversion"
-        version="0.1.2",
+        version="0.1.3",
         author="aferro",
         author_email="aferro@em.uni-frankfurt.de",
         description="Qt GUIs for Systems Engineering and Computer Vision",
