@@ -1,7 +1,16 @@
 [![PyPI version](https://badge.fury.io/py/secv-guis.svg)](https://badge.fury.io/py/secv-guis) [![Build Status](https://travis-ci.org/andres-fr/secv-guis.svg?branch=master)](https://travis-ci.org/andres-fr/secv-guis) [![Documentation Status](https://readthedocs.org/projects/secv-guis/badge/?version=latest)](https://secv-guis.readthedocs.io/en/latest/?badge=latest)
 
 
-### Install and run:
+# DEMOS:
+
+### Bimask App:
+
+This application allows the user to load, edit and save different annotations and pre-annotations for high-resolution images. For more details see the [instructions](secv_guis/bimask_app/instructions.txt)
+
+![](assets/bimask_demo_1.gif)
+![](assets/bimask_demo_2.gif)
+
+# Install and run:
 
 The recommended way is to install from PyPI via command line interface. Using a fresh environment, it would look like this:
 
@@ -17,19 +26,20 @@ You can also clone this package from GitHub, or pull the latest release: https:/
 The badges above link to the documentation and PyPI webpages. Please let me know if you encounter any issue!
 
 
-### Developers:
+# Developers:
 
 The project is split in 2 main parts: the modules at the top level contain reusable parts (library-space). Each directory contains then an application (app-space).
 To create a new app, make a new folder with your desired app-specific contents, and include it into `__main__`. If you develop reusable contents, consider adding them to the top-level modules to be used in further apps. Conversely, avoid API-breaking changes into the reusable components, unless you make sure that all the apps are conveniently updated.
 
 The ``.travis.yml`` file contains examples on how to run code style check, unit tests with coverage, build and autodoc. You can see more detailed information here: https://github.com/andres-fr/python3-template/blob/master/README.md
 
-### Rationale:
+Also, the documentation for this own repository should help extending the software: https://secv-guis.readthedocs.io/en/latest/?badge=latest
 
-After conversations with DBA, improvements in TPE, and struggling attempts to annotate cracks with pixel-precision, we considered the idea of a tool specific for crack annotation, that would take the (fused?) TPE output as pre-annotation and allow chunkwise filtering on top, as well as free painting.
+# Rationale:
 
+The design of the bi-mask annotation GUI after was decided after conversations with the Civil Engineers, and driven by our struggling attempts to annotate cracks with pixel-precision. We needed a python-based extendable tool that would allow for "free painting" on high-resolution images as well as combining preannotations with annotations.
 
-We decided to revamp the AerobiTool GUI after an exhaustive search of available OSS labeling tools whose functionality would have a big intersection with our requirements, and be easily extendible via Python. No existing tool allowed that in a reasonable way, most of them lacking pixel-precise segmentation, a.k. "free painting". A list can be found [here](https://github.com/heartexlabs/awesome-data-labeling):
+The following is the result of an exhaustive search of available OSS labeling tools whose functionality would intersect with our requirements. No existing tool matched them close enough, most of them lacking pixel-precise segmentation, a.k. "free painting". A list can be found [here](https://github.com/heartexlabs/awesome-data-labeling):
 
 * [labelImg](https://github.com/tzutalin/labelImg) - LabelImg is a graphical image annotation tool and label object bounding boxes in images
 * [CVAT](https://github.com/opencv/cvat) - Powerful and efficient Computer Vision Annotion Tool
@@ -51,5 +61,3 @@ We decided to revamp the AerobiTool GUI after an exhaustive search of available 
 * [CATMAID](https://github.com/catmaid/CATMAID) - Collaborative Annotation Toolkit for Massive Amounts of Image Data
 * [make-sense](https://github.com/SkalskiP/make-sense) - makesense.ai is a free to use online tool for labelling photos
 * [LOST](https://github.com/l3p-cv/lost) - Design your own smart Image Annotation process in a web-based environment
-
-
