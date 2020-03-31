@@ -100,9 +100,9 @@ jobs:
             repo: "$REPO_NAME"
         - provider: pypi
           skip_cleanup: true
-          user: "$PYPI_USERNAME"
+          user: "__token__"  # "$PYPI_USERNAME"
           password:
-            secure: "a8++ykvF6+Be8CSRw48uhnaANjyIOCljVsY4EfrJg5ofhPWQYM81eRPswxrmS1se9oSfcA4b05bAGhJgbO3Tbc9U0FLwmsTGxN78gxCVvMOoYVs7uM/4+JOqs6PrXaYw4oaRoTvGCsDVRm6npzq2vAFSBy/AI2s4KI+S3VAPE6OLutbnbuZhLPyWmzCu+khbHY6v1thlyac3haHMZj2tRm7Wqe3qg1ZszJRNMLEIQTDy3jv70Et+m1g2qs1RlMlEREX9JNFR2/3CmNHAGldH8o9PQMv9TuOwgqkFqK5vIeLkqbznGoCAqQsoY+YZ+rUyT6Gu/5pP+qN8pEtFu/FtlNQ+ssJ9f4DyUX+UWgfnQnGgGfOT9qKQLArmwC+1jl82h1we2HjaealgWfBBzC/n69vvNVB17e8ye8/Xq9mXHa4j9aVnR5hwzPmjeWzcDFjTM0smwyjxzJKC8eR7+7XCWTYK+Bed6OX2tGTMwneZiVxWbiSX9leM21fr6s+bNQUTB2s6Z79/bfvahmqEFIT22lFgFVbUlyNp+LKPHWc4iSNK59xaQIfvhPRC/oVw+XkiyAwRrvMg0TFz88aZQrJ4fm2MRK2i08bgHMMf/7B6T19LiJhpr4KOYMBHzpSOdLcLJDCZzVcvv5/avAV8Qcq6x/vUj7d3ukp938cRjTRHRIo="
+            secure: "GyMIBlbT6+3kU6i1tHsgoXnXug4g3xWyZU5Cb3z4E3b1f9o+t8msOJlbLvrhHhpV6dtychR4NDssY4gmsdFPloWmQzbYTVD5aSoIQ2ciHNokt2t3Z+O1RSHMgXtz3ke5sq8EUgrNBkOnk3HVM1k6r/TQgipLNHmp6WqnqpYy20UDcG8Vy9g2rquD6j8Cb+MyW+hVN2kN3buDSomNEzH18McAnihHSoTSl5VrGSrW2eXoeoLyaODt8eMwfS9dKFQUb8wu4vx6pKwm4M9Xz32LBru210HRFWb69yazLEePA9Puhf4S4nF7rttge6vDB8G/wIoU8+a8d3ZhfG9FOAlt2Q/YIWggN20SMvK/j5/uxWM4+W8Gd9w6wlkHl4T0ZDU9bJ1YdYmJaXWj8vRClQ1fSucIBeE5YC9AaFK2+Xz4vSRKI3afADmSf1win+G3WBerpVOdnxpjKvoB7pZrdwPkx7wd/jpy04VMhf6/vYXL1QjG4waPu1SuORQspY28DF+Lbl/bARsa9WMJxdOJmNZ89aRr7g3/ju0V0+V5QF6rTei4boiI7BpH6FeAr6XaUAqoJ222KFzZQ0MMPTaB5QbBbOf+N41Oqb1t4QDkn42XJbRqdOEHBkDFhJcJrnktvTe5CEl7yL6z63jaFqOjkepjYb2QRvkKdtzfF+r+LLNVQAA="
           on:
             tags: true
             # branch: master # already filtered out in the "branches" section
