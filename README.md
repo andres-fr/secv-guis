@@ -1,7 +1,20 @@
+[![PyPI version](https://badge.fury.io/py/secv-guis.svg)](https://badge.fury.io/py/secv-guis) [![Build Status](https://travis-ci.org/andres-fr/secv-guis.svg?branch=master)](https://travis-ci.org/andres-fr/secv-guis) [![Documentation Status](https://readthedocs.org/projects/secv-guis/badge/?version=latest)](https://secv-guis.readthedocs.io/en/latest/?badge=latest)
 
 
+### Install and run:
 
-### Install/Update:
+The recommended way is to install from PyPI via command line interface. Using a fresh environment, it would look like this:
+
+```
+cd /tmp
+virtualenv -p python3 venv
+source venv/bin/activate
+pip install secv-guis
+python -m secv_guis
+```
+
+You can also clone this package from GitHub, or pull the latest release: https://github.com/andres-fr/secv-guis/releases
+The badges above link to the documentation and PyPI webpages. Please let me know if you encounter any issue!
 
 
 ### Developers:
@@ -9,6 +22,7 @@
 The project is split in 2 main parts: the modules at the top level contain reusable parts (library-space). Each directory contains then an application (app-space).
 To create a new app, make a new folder with your desired app-specific contents, and include it into `__main__`. If you develop reusable contents, consider adding them to the top-level modules to be used in further apps. Conversely, avoid API-breaking changes into the reusable components, unless you make sure that all the apps are conveniently updated.
 
+The ``.travis.yml`` file contains examples on how to run code style check, unit tests with coverage, build and autodoc. You can see more detailed information here: https://github.com/andres-fr/python3-template/blob/master/README.md
 
 ### Rationale:
 
