@@ -30,6 +30,7 @@ REQUIREMENTS = [
     "scikit-image",
     "PySide2"]
 
+
 def setup():
     """
     The proper setup function, adapted from the tutorial in
