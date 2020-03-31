@@ -51,7 +51,8 @@ def setup():
         url="https://github.com/andres-fr/secv-guis",
         packages=setuptools.find_packages(exclude=["*utest*"]),
         # dict of package_name: [list_of_patterns]
-        package_data={"secv_guis": ["*/*.txt"]},
+        # https://stackoverflow.com/a/39823590/4511978
+        # package_data={"secv_guis": ["*/*.txt"]},
         include_package_data=True,
         install_requires=REQUIREMENTS,
         classifiers=[
