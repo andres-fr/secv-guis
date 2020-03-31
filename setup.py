@@ -6,16 +6,35 @@ Deploy script for the package. It has to be in the repository root directory.
 Make sure that the config entries are correct!
 """
 
+
 import setuptools
 
+
+# See https://stackoverflow.com/a/33685899/4511978
+REQUIREMENTS = [
+    "flake8",
+    "coverage",
+    "snakeviz",
+    # "memory_profiler",
+    "sphinx",
+    "sphinx_rtd_theme",
+    "bump2version",
+    "setuptools",
+    "wheel",
+    "twine",
+    # "mypy",
+    #
+    "ExifRead",
+    "randomcolor",
+    "numpy",
+    "scikit-image",
+    "PySide2"]
 
 def setup():
     """
     The proper setup function, adapted from the tutorial in
     https://packaging.python.org/tutorials/packaging-projects/
     """
-    with open('requirements.txt') as f:
-        requirements = f.read().splitlines()
     with open("README.md", "r") as f:
         long_description = f.read()
     #
@@ -33,7 +52,7 @@ def setup():
         # dict of package_name: [list_of_patterns]
         package_data={"secv_guis": ["*/*.txt"]},
         include_package_data=True,
-        install_requires=requirements,
+        install_requires=REQUIREMENTS,
         classifiers=[
             # comprehensive list: https://pypi.org/classifiers/
             "Programming Language :: Python :: 3 :: Only",
