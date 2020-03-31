@@ -91,7 +91,7 @@ jobs:
           name: "$TRAVIS_COMMIT_MESSAGE"
           body: "See [CHANGELOG]($CHANGELOG_PATH) for details."
           api_key:
-            secure: "mf8Clj5RXzIX05dXTDGWnxeembpncHslFlIaSEpJt83/odusp1u885rxvYjrSzpcsxE3iaWdDf9W3vlB9/Hm/b5TUc0WBg/kxCx5qs3v6K9N0+3JURMUEhtBfUYs6FJ4RRIcWoakxFjlSZM9FmvGo1yQlabKZlPLTvQn4xwWQzk9fLAyKEDFJnCCmN1HzZm8SNLSIhZrvyw9Cz12bZYixsyfFODEV/Nk4XE4CTcFqgWRzy1wLN5oYQB/+H9CvVnX9yeF9ijkmBLzktgtU0xe0zYZNeHcGiviIS8oWVIpnJ8BSh55oqBsTxJshdKXO7O4dymzya4aLM/cr2SIjUCNOfaBiF4pJ82IHvLN3N0KMXRfpZjktaytZHgVdGAgMxoqzlLZulREaAL0O89r5y7LnXj2QUtnluXwiXvFlCbnWL1Tu8721xjXqNdGj4c2BVwnRIy8fFImvdaTKumHeUpkviYaEReNMBU3Kc8lBzm5uEaZoo0eErWtOoDJ+YF0IFwY0dnGH+8V3nTasO0n+lhiWZ+p22ckO7MvONRfgrWZT+qkZF0jEwKQRfou9+Jcs2+cilTJs/LRW2/nO+tA9H3DMFaq6aXM2DkxJO0+mQmxAHjCmuBTeru4416rzdATZ6OIhsC2D5CIY/HrlC4fGJBbwlG751hCqeMY0QoxLwI0cSY="
+            secure: "DqUrFvVWuQndBXrPR3MDAfi1uIPcHTTlZD2eUdt9ZLMHKS3y5j6EnUVpSficoT0SH+YFSMyre9y0C0GkcPYzMgQNb7mH/9Fwj3V9tsoiZczUJwJyLa2Pq1JyeGFjHHEfo5v13AXZKcPYZHE4TXXOkvPCHgyKBj6xL7yH+PmW624xSyQht6i+c+hpwgdeGD4RJ95go9J1p2VQnVPcnrv3aQwa3XQ5F/VhrVeSdJv+pF3eSGIixEXiIozapgy0IAjG0u1TxhZV/ChlnYI2/Smj7wfDIrNyaVQVDGU6+ANm4uw2fATgmAL186UCbcEHxjysSseQ5Wl+sSc3GQ7yNH/eNnuqKBFfTsOfXWw+rdhDnP5K713Bx1PwggGAwXnkQlPv6/Oo+4cKdz8hlk9+J/R5zdX8GTfhOjAcAjePvbSE7woDqMYzr2hw7NNKl0Lzr6bgnmaKyYbpR4FnFTeqtrHaDniRmU9h5kIg2tyzjhuSjm/GQmR1eh/CNrvpNqIjbu1cwSmlrmp2ZJ4wSLTzG3TQMBnuH90wEz4uX492zFM6jqw9DQTnEM0ljXPQJccZ0xk2J38dIFlzhbEVC2Z/402/8MfFJkzhX6JO6mzMU1F0il1gsdpqosJauzG1iUAZ6/mprYWa86tQ+WVBVe4zQ4zNIxnuiAi1bZSUMREb8A+PLi4="
           file_glob: true
           file: "$GH_RELEASES_ASSET_PATH"
           on:
@@ -111,6 +111,6 @@ jobs:
 
 # Here you can specify the order for stages, or skip some
 stages:
-  - test
-  - build
+  # - test
+  # - build
   - deploy
