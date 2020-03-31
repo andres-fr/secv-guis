@@ -87,7 +87,7 @@ jobs:
       name: "Deploy to GitHub Releases and PyPI"
       deploy:
         - provider: releases
-          skip_cleanup: true
+          # skip_cleanup: true
           name: "$TRAVIS_COMMIT_MESSAGE"
           body: "See [CHANGELOG]($CHANGELOG_PATH) for details."
           api_key:
@@ -99,7 +99,7 @@ jobs:
             # branch: master # already filtered out in the "branches" section
             repo: "$REPO_NAME"
         - provider: pypi
-          skip_cleanup: true
+          # skip_cleanup: true
           user: "__token__"  # "$PYPI_USERNAME"
           password:
             secure: "GyMIBlbT6+3kU6i1tHsgoXnXug4g3xWyZU5Cb3z4E3b1f9o+t8msOJlbLvrhHhpV6dtychR4NDssY4gmsdFPloWmQzbYTVD5aSoIQ2ciHNokt2t3Z+O1RSHMgXtz3ke5sq8EUgrNBkOnk3HVM1k6r/TQgipLNHmp6WqnqpYy20UDcG8Vy9g2rquD6j8Cb+MyW+hVN2kN3buDSomNEzH18McAnihHSoTSl5VrGSrW2eXoeoLyaODt8eMwfS9dKFQUb8wu4vx6pKwm4M9Xz32LBru210HRFWb69yazLEePA9Puhf4S4nF7rttge6vDB8G/wIoU8+a8d3ZhfG9FOAlt2Q/YIWggN20SMvK/j5/uxWM4+W8Gd9w6wlkHl4T0ZDU9bJ1YdYmJaXWj8vRClQ1fSucIBeE5YC9AaFK2+Xz4vSRKI3afADmSf1win+G3WBerpVOdnxpjKvoB7pZrdwPkx7wd/jpy04VMhf6/vYXL1QjG4waPu1SuORQspY28DF+Lbl/bARsa9WMJxdOJmNZ89aRr7g3/ju0V0+V5QF6rTei4boiI7BpH6FeAr6XaUAqoJ222KFzZQ0MMPTaB5QbBbOf+N41Oqb1t4QDkn42XJbRqdOEHBkDFhJcJrnktvTe5CEl7yL6z63jaFqOjkepjYb2QRvkKdtzfF+r+LLNVQAA="
@@ -111,6 +111,6 @@ jobs:
 
 # Here you can specify the order for stages, or skip some
 stages:
-  # - test
-  # - build
+  - test
+  - build
   - deploy
