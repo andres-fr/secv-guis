@@ -1,16 +1,19 @@
 [![PyPI version](https://badge.fury.io/py/secv-guis.svg)](https://badge.fury.io/py/secv-guis) [![Build Status](https://travis-ci.org/andres-fr/secv-guis.svg?branch=master)](https://travis-ci.org/andres-fr/secv-guis) [![Documentation Status](https://readthedocs.org/projects/secv-guis/badge/?version=latest)](https://secv-guis.readthedocs.io/en/latest/?badge=latest)
 
+# SECV GUIs
 
-# DEMOS:
+Repository hosting diverse Python3 Qt GUIs made at the Systems Engineering and Computer Vision Department @ Goethe University Frankfurt.
+
+## DEMOS:
 
 ### Bimask App:
 
-This application allows the user to load, edit and save different annotations and pre-annotations for high-resolution images. For more details see the [instructions](secv_guis/bimask_app/instructions.txt)
+This application allows the user to load, edit and save different annotations and pre-annotations for high-resolution images. Note that the GUI does **not** integrate the pre-annotation vision modules, it simply loads their results from the filesystem. For more details see the [instructions](secv_guis/bimask_app/instructions.txt)
 
 ![](assets/bimask_demo_1.gif)
 ![](assets/bimask_demo_2.gif)
 
-# Install and run:
+## Install and run:
 
 The recommended way is to install from PyPI via command line interface. Using a fresh environment, it would look like this:
 
@@ -26,7 +29,7 @@ You can also clone this package from GitHub, or pull the latest release: https:/
 The badges above link to the documentation and PyPI webpages. Please let me know if you encounter any issue!
 
 
-# Developers:
+## Developers:
 
 The project is split in 2 main parts: the modules at the top level contain reusable parts (library-space). Each directory contains then an application (app-space).
 To create a new app, make a new folder with your desired app-specific contents, and include it into `__main__`. If you develop reusable contents, consider adding them to the top-level modules to be used in further apps. Conversely, avoid API-breaking changes into the reusable components, unless you make sure that all the apps are conveniently updated.
@@ -35,11 +38,11 @@ The ``.travis.yml`` file contains examples on how to run code style check, unit 
 
 Also, the documentation for this own repository should help extending the software: https://secv-guis.readthedocs.io/en/latest/?badge=latest
 
-# Rationale:
+## Rationale:
 
-The design of the bi-mask annotation GUI after was decided after conversations with the Civil Engineers, and driven by our struggling attempts to annotate cracks with pixel-precision. We needed a python-based extendable tool that would allow for "free painting" on high-resolution images as well as combining preannotations with annotations.
+The necessity of the bi-mask annotation GUI was concluded after conversations with the Civil Engineers, and driven by our struggling attempts to annotate cracks with pixel-precision consistently from different setups. When looking for existing tools, we needed a python-based extendable tool that would allow for "free painting"  as well as combining preannotations with annotations. It should be reasonably responsive when working with high-resolution images.
 
-The following is the result of an exhaustive search of available OSS labeling tools whose functionality would intersect with our requirements. No existing tool matched them close enough, most of them lacking pixel-precise segmentation, a.k. "free painting". A list can be found [here](https://github.com/heartexlabs/awesome-data-labeling):
+The following is the result of an exhaustive search of available OSS labeling tools whose functionality would intersect with our requirements. No existing tool matched them close enough, most of them lacking pixel-precise segmentation, a.k. "free painting", or integration of preannotated masks. A list can be found [here](https://github.com/heartexlabs/awesome-data-labeling):
 
 * [labelImg](https://github.com/tzutalin/labelImg) - LabelImg is a graphical image annotation tool and label object bounding boxes in images
 * [CVAT](https://github.com/opencv/cvat) - Powerful and efficient Computer Vision Annotion Tool
