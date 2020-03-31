@@ -34,9 +34,9 @@ copyright = '2020, Andres F. R.'
 author = 'Andres F. R.'
 
 # The short X.Y version
-version = '0.2.2'
+version = '0.2.3'
 # The full version, including alpha/beta/rc tags
-release = '0.2.2'
+release = '0.2.3'
 
 
 # -- General configuration ---------------------------------------------------
