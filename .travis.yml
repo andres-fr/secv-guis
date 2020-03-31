@@ -18,6 +18,9 @@ env:
 # this line routes the builds to Ubuntu 16.04
 dist: xenial
 
+#
+services: xvfb
+
 # implicitly creates a venv for python in the VM (so pip syntax is "global")
 language: python
 python:
@@ -46,6 +49,10 @@ addons:
   apt:
     update: true
     packages:
+      # to prevent exit 134 error https://stackoverflow.com/a/57280543/4511978
+      - x11-utils
+      - libxkbcommon-x11-0
+      #
       - latexmk
       - texlive-fonts-recommended
       - texlive-latex-recommended
