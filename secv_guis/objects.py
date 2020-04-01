@@ -10,21 +10,18 @@ the object without having to roll back or break the undo queue.
 """
 
 
-import numpy as np
-from PySide2 import QtCore, QtWidgets, QtGui
+from PySide2 import QtCore, QtGui
 from .commands import CompositeCommand
-from .utils import pixmap_to_arr
-
 
 
 # #############################################################################
 # ## OBJECT COMPOSITE COMMANDS
 # #############################################################################
-class PointSeriesCommand(CompositeCommand):
+class PointList(CompositeCommand):
     """
     A scene object contains a data structure and an appearance.
     """
-    COMMAND_NAME = "Draw points"
+    COMMAND_NAME = "Draw point list"
 
     def __init__(self, scene, diameter, fill_rgba=(0, 255, 255, 100),
                  frame_rgba=(0, 0, 0, 255),

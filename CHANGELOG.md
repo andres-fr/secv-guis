@@ -24,6 +24,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### TODO:
 
-* Add functionality to mark lines, or trails of lines
+* Objects framework logic intersects with mask update logic. At some point, the scene will probably need refactoring so that masks are also treated as objects and composite actions are part of the core design.
 * Argument parser could also provide default input/output paths
 * Run Qt app in other platforms or web-based

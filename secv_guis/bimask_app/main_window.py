@@ -23,7 +23,7 @@ from ..utils import load_img_and_exif
 from ..commands import DrawCommand, EraseCommand, DrawOverlappingCommand
 from .dialogs import InstructionsDialog, AboutDialog, KeymapsDialog, \
     SavedStateTracker
-from ..objects import PointSeriesCommand
+from ..objects import PointList
 
 
 # #############################################################################
@@ -163,6 +163,7 @@ class IntegratedSaveForm(SaveForm):
         self.add_checkbox("preannot.", initial_val=False,
                           initial_txt="_preannot.png")
         self.add_checkbox("annot.", initial_txt="_annot.png")
+        self.add_checkbox("points", initial_txt="_points.txt")
         # This reference is needed otherwise dialogs get garbage collected?
         self.dialog = None
         self.dialog_ms = save_dialog_timeout_ms
@@ -172,24 +173,30 @@ class IntegratedSaveForm(SaveForm):
         Overriden method that we don't call directly. See ``SaveForm`` for
         interface details.
         """
-        save_preannot, save_annot = states
-        suff_preannot, suff_annot = suffixes
+        save_preannot, save_annot, save_points = states
+        suff_preannot, suff_annot, suff_points = suffixes
         img_name = self.main_window.current_img_basename
         #
         a_pmi = self.main_window.graphics_view.annot_pmi
         pa_pmi = self.main_window.graphics_view.preannot_pmi
         #
+        scene = self.main_window.graphics_view.scene()
         saved = {}
         if save_preannot and pa_pmi is not None:
             p_path = os.path.join(self.save_path, img_name + suff_preannot)
-            self.main_window.graphics_view.scene().save_mask_as_image(
-                pa_pmi, p_path, overwrite, verbose=False)
+            scene.save_mask_as_image(pa_pmi, p_path, overwrite, verbose=False)
             saved["preannotation mask"] = p_path
         if save_annot and a_pmi is not None:
             a_path = os.path.join(self.save_path, img_name + suff_annot)
-            self.main_window.graphics_view.scene().save_mask_as_image(
-                a_pmi, a_path, overwrite, verbose=False)
+            scene.save_mask_as_image(a_pmi, a_path, overwrite, verbose=False)
             saved["annotation mask"] = a_path
+        if save_points and scene.objects:
+            state_dict = {k.__name__: [elt.state() for elt in v]
+                          for k, v in scene.objects.items()}
+            p_path = os.path.join(self.save_path, img_name + suff_points)
+            with open(p_path, "w") as f:
+                f.write(str(state_dict))
+            saved["point lists"] = p_path
         #
         if saved:
             self.main_window.graphics_view.saved_state_tracker.save(
@@ -405,19 +412,14 @@ class IntegratedDisplayView(DisplayView):
                                            [pmi, brush_size])
         elif brush_type == mp_txt:
 
-            self.scene().object_action(PointSeriesCommand, [x, y],
+            self.scene().object_action(PointList, [x, y],
                                        [self.scene(), brush_size])
-            self.scene().object_action(PointSeriesCommand, [x+200, y],
+            self.scene().object_action(PointList, [x+200, y],
                                        [self.scene(), brush_size])
-            self.scene().object_action(PointSeriesCommand, [x, y + 200],
+            self.scene().object_action(PointList, [x, y + 200],
                                        [self.scene(), brush_size])
-            # self._perform_composite_action(PointSeriesCommand, [x, y],
-            #                                [self.scene(), brush_size])
+            self.scene().close_current_object_action(self.main_window.undo_stack)
 
-            # self._perform_composite_action(PointSeriesCommand, [x + 200, y],
-            #                                [self.scene(), brush_size])
-            # self._perform_composite_action(PointSeriesCommand, [x + 400, y + 200],
-            #                                [self.scene(), brush_size])
 
             # rgba = self.scene().mask_pmis[pmi]
             # ref_pmi = self.preannot_pmi  # preannot is always the ref
