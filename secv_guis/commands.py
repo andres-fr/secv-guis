@@ -17,6 +17,14 @@ from PySide2 import QtCore, QtWidgets, QtGui
 from .utils import pixmap_to_arr
 
 
+# #############################################################################
+# ## SINGLE-SHOT COMMANDS
+# #############################################################################
+
+
+# #############################################################################
+# ## COMPOSITE COMMANDS
+# #############################################################################
 class CompositeCommand(QtWidgets.QUndoCommand):
     """
     In some cases like painting a stroke into a pixmap, it doesn't make sense

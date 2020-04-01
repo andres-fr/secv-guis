@@ -23,6 +23,7 @@ from ..utils import load_img_and_exif
 from ..commands import DrawCommand, EraseCommand, DrawOverlappingCommand
 from .dialogs import InstructionsDialog, AboutDialog, KeymapsDialog, \
     SavedStateTracker
+from ..objects import PointSeriesCommand
 
 
 # #############################################################################
@@ -381,7 +382,7 @@ class IntegratedDisplayView(DisplayView):
         idx_map = {0: self.preannot_pmi, 1: self.annot_pmi}
         mask_idx = self.main_window.paint_form.current_button_idx
         pmi = idx_map[mask_idx]
-        # paint only if this pmi exists
+        # paint only if this pmi
         if pmi is None:
             return
         # retrieve brush info
@@ -403,10 +404,26 @@ class IntegratedDisplayView(DisplayView):
             self._perform_composite_action(EraseCommand, [x, y],
                                            [pmi, brush_size])
         elif brush_type == mp_txt:
-            rgba = self.scene().mask_pmis[pmi]
-            ref_pmi = self.preannot_pmi  # preannot is always the ref
-            self._perform_composite_action(DrawOverlappingCommand, [x, y],
-                                           [pmi, ref_pmi, rgba, brush_size])
+
+            self.scene().object_action(PointSeriesCommand, [x, y],
+                                       [self.scene(), brush_size])
+            self.scene().object_action(PointSeriesCommand, [x+200, y],
+                                       [self.scene(), brush_size])
+            self.scene().object_action(PointSeriesCommand, [x, y + 200],
+                                       [self.scene(), brush_size])
+            # self._perform_composite_action(PointSeriesCommand, [x, y],
+            #                                [self.scene(), brush_size])
+
+            # self._perform_composite_action(PointSeriesCommand, [x + 200, y],
+            #                                [self.scene(), brush_size])
+            # self._perform_composite_action(PointSeriesCommand, [x + 400, y + 200],
+            #                                [self.scene(), brush_size])
+
+            # rgba = self.scene().mask_pmis[pmi]
+            # ref_pmi = self.preannot_pmi  # preannot is always the ref
+            # self._perform_composite_action(DrawOverlappingCommand, [x, y],
+            #                                [pmi, ref_pmi, rgba, brush_size])
+
         else:
             print("unknown brush type:", brush_type)
         #
@@ -426,6 +443,7 @@ class IntegratedDisplayView(DisplayView):
         stack
         """
         self._finish_composite_command()
+        self.scene().close_current_object_action()#####################################
 
     def on_move(self, event, has_left, has_mid, has_right, this_pos, last_pos):
         """

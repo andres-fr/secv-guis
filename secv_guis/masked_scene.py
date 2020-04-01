@@ -15,12 +15,13 @@ from PIL import Image
 from .utils import RandomColorGenerator, rgb_arr_to_rgb_pixmap, \
     bool_arr_to_rgba_pixmap, pixmap_to_arr, unique_filename
 from .mouse_event_manager import MouseEventManager
+from .objects import ObjectContainer
 
 
 # #############################################################################
 # ## SCENE (PAINT ETC)
 # #############################################################################
-class MaskedImageScene(QtWidgets.QGraphicsScene):
+class MaskedImageScene(QtWidgets.QGraphicsScene, ObjectContainer):
     """
     Basic area that allows to display a color image, together with a set of
     binary masks on top of it.
@@ -31,7 +32,10 @@ class MaskedImageScene(QtWidgets.QGraphicsScene):
         """
         :param img_arr: See ``update_image``
         """
-        super().__init__(parent)
+        # super().__init__(parent)
+        QtWidgets.QGraphicsScene.__init__(self, parent)
+        ObjectContainer.__init__(self)
+        #
         self.img_pmi = None
         self.h = None
         self.w = None
