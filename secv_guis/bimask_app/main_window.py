@@ -216,6 +216,8 @@ class IntegratedDisplayView(DisplayView):
         self._preannot_pmap = None
         self.preannot_pmi = None
         self.annot_pmi = None
+        #
+        #
         self._open_macro_command = None
         #
         self.saved_state_tracker = None
@@ -328,6 +330,42 @@ class IntegratedDisplayView(DisplayView):
             self.annot_pmi = self.scene().replace_mask_pmi(
                 self.annot_pmi, m, rgba)
 
+    def _perform_composite_action(self, action_class, action_args,
+                                  construction_args):
+        """
+        This function is the recommended way to perform a composite
+        action for the following reasons:
+
+        1. If ``action_class`` is already running, it simply continues it.
+        2. If a different composite action was running, it closes it and starts
+            this one.
+        3. If no composite action was running, starts this one
+
+        And finally performs the action.
+
+        :param construction_args: If this action needs to be started, it will
+          be called via ``cmd = action_class(*construction_args)``
+        :param action_args: The command will be called via ``cmd(action_args)``
+
+        Usage example::
+          x, y = current_action_position...
+          pmi = ...
+          brush_size = ...
+          rgba = self.scene().mask_pmis[pmi]
+          self._perform_composite_action(DrawCommand, [x, y],
+                                         [pmi, rgba, brush_size])
+        """
+        cmd = self._open_macro_command
+        # if changed to this action without releasing the prior one, release it
+        if action_class is not cmd.__class__:
+            self._finish_composite_command()
+            cmd = self._open_macro_command  # this is None
+        # if no open action of this class, create
+        if cmd is None:
+            cmd = action_class(*construction_args)
+            self._open_macro_command = cmd
+        cmd.action(*action_args)
+
     def paint_scene(self, x, y):
         """
         Paint to the currently selected mask, with the currently selected
@@ -357,25 +395,18 @@ class IntegratedDisplayView(DisplayView):
             "This GUI was designed for 3 brush types only:{}, got {}".format(
                 known_painters, brush_type)
         # if no open action exists, create:
-        cmd = self._open_macro_command
         if brush_type == p_txt:
-            if cmd is None:
-                rgba = self.scene().mask_pmis[pmi]
-                cmd = DrawCommand(pmi, rgba, brush_size)
-                self._open_macro_command = cmd
-            cmd.action(x, y)
+            rgba = self.scene().mask_pmis[pmi]
+            self._perform_composite_action(DrawCommand, [x, y],
+                                           [pmi, rgba, brush_size])
         elif brush_type == e_txt:
-            if cmd is None:
-                cmd = EraseCommand(pmi, brush_size)
-                self._open_macro_command = cmd
-            cmd.action(x, y)
+            self._perform_composite_action(EraseCommand, [x, y],
+                                           [pmi, brush_size])
         elif brush_type == mp_txt:
-            if cmd is None:
-                rgba = self.scene().mask_pmis[pmi]
-                ref_pmi = self.preannot_pmi  # preannot is always the ref
-                cmd = DrawOverlappingCommand(pmi, ref_pmi, rgba, brush_size)
-                self._open_macro_command = cmd
-            cmd.action(x, y)
+            rgba = self.scene().mask_pmis[pmi]
+            ref_pmi = self.preannot_pmi  # preannot is always the ref
+            self._perform_composite_action(DrawOverlappingCommand, [x, y],
+                                           [pmi, ref_pmi, rgba, brush_size])
         else:
             print("unknown brush type:", brush_type)
         #
