@@ -411,25 +411,27 @@ class IntegratedDisplayView(DisplayView):
             self._perform_composite_action(EraseCommand, [x, y],
                                            [pmi, brush_size])
         elif brush_type == mp_txt:
-
-            self.scene().object_action(PointList, [x, y],
-                                       [self.scene(), brush_size])
-            self.scene().object_action(PointList, [x+200, y],
-                                       [self.scene(), brush_size])
-            self.scene().object_action(PointList, [x, y + 200],
-                                       [self.scene(), brush_size])
-            self.scene().close_current_object_action(self.main_window.undo_stack)
-
-
-            # rgba = self.scene().mask_pmis[pmi]
-            # ref_pmi = self.preannot_pmi  # preannot is always the ref
-            # self._perform_composite_action(DrawOverlappingCommand, [x, y],
-            #                                [pmi, ref_pmi, rgba, brush_size])
-
+            rgba = self.scene().mask_pmis[pmi]
+            ref_pmi = self.preannot_pmi  # preannot is always the ref
+            self._perform_composite_action(DrawOverlappingCommand, [x, y],
+                                           [pmi, ref_pmi, rgba, brush_size])
         else:
             print("unknown brush type:", brush_type)
         #
         self.saved_state_tracker.edit()
+
+    def add_point(self, x, y, close_after=False):
+        """
+        """
+        if self.scene().img_pmi is None:
+            return
+        brush_size = self.main_window.paint_form.current_brush_size
+        self.scene().object_action(PointList, [x, y],
+                                   [self.scene(), brush_size])
+        #
+        if close_after:
+            self.scene().close_current_object_action(
+                self.main_window.undo_stack)
 
     # EVENT HANDLING
     def on_left_press(self, event):
@@ -437,7 +439,13 @@ class IntegratedDisplayView(DisplayView):
         Callback implementation, calls ``paint_scene``
         """
         xpos, ypos = self.mapToScene(event.pos()).toTuple()
-        self.paint_scene(xpos, ypos)
+        brush_type = self.main_window.paint_form.current_brush_type
+        if brush_type == self.main_window.POINT_LIST_TXT:
+            mods = event.modifiers()
+            has_ctrl = bool(mods & QtCore.Qt.ControlModifier)
+            self.add_point(xpos, ypos, close_after=has_ctrl)
+        else:
+            self.paint_scene(xpos, ypos)
 
     def on_left_release(self, event):
         """
@@ -445,7 +453,9 @@ class IntegratedDisplayView(DisplayView):
         stack
         """
         self._finish_composite_command()
-        self.scene().close_current_object_action()#####################################
+        # This shows that the Object framework logic intersects with the mask
+        # update logic. at some point merge both
+        self.scene().close_current_object_action()
 
     def on_move(self, event, has_left, has_mid, has_right, this_pos, last_pos):
         """
@@ -557,6 +567,7 @@ class MainWindow(QtWidgets.QMainWindow):
     PAINTER_TXT = "Painter"
     ERASER_TXT = "Eraser"
     MASKED_PAINTER_TXT = "Masked painter"
+    POINT_LIST_TXT = "Points"
 
     def __init__(self, parent=None, initial_mask_color=(255, 54, 76, 150),
                  initial_preannot_color=(102, 214, 123, 100),
@@ -578,7 +589,8 @@ class MainWindow(QtWidgets.QMainWindow):
         # define controller widgets
         self.file_lists = FileLists()
         self.paint_form = CrackAnnotPaintForm(
-            self, [self.PAINTER_TXT, self.ERASER_TXT, self.MASKED_PAINTER_TXT],
+            self, [self.PAINTER_TXT, self.ERASER_TXT, self.MASKED_PAINTER_TXT,
+                   self.POINT_LIST_TXT],
             max_brush_size, thresh_min=self.THRESH_MIN,
             thresh_max=self.THRESH_MAX, thresh_num_steps=self.THRESH_NUM_STEPS)
         self.save_form = IntegratedSaveForm(self, default_path=None)

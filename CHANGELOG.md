@@ -5,13 +5,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
-## [1.0.8](https://github.com/andres-fr/secv-guis/compare/v0.2.3...HEAD) - 2020-04-01
+## [0.3.0](https://github.com/andres-fr/secv-guis/compare/v0.2.3...HEAD) - 2020-04-01
 
 ### Added
 
 * Fixed in-between brush changing bug
 * Added "objects" framework to add composite objects to the scene
-* Created object to add a point cloud to the scene
+* Created object to add a point list to the scene
 
 
 ## [0.1.0] - 2020-03-31
