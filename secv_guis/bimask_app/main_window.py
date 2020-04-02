@@ -14,15 +14,18 @@ Check instructions.txt for more details.
 import os
 from PySide2 import QtCore, QtWidgets, QtGui
 import numpy as np
+from PIL import Image
+import json
 #
 from skimage.filters import apply_hysteresis_threshold
 #
-from ..masked_scene import MaskedImageScene, DisplayView
-from ..base_widgets import FileList, MaskPaintForm, SaveForm
-from ..utils import load_img_and_exif
-from ..commands import DrawCommand, EraseCommand, DrawOverlappingCommand
 from .dialogs import InstructionsDialog, AboutDialog, KeymapsDialog, \
     SavedStateTracker
+#
+from ..masked_scene import MaskedImageScene, DisplayView
+from ..base_widgets import FileList, MaskPaintForm, SaveForm
+from ..utils import load_img_and_exif, unique_filename
+from ..commands import DrawCommand, EraseCommand, DrawOverlappingCommand
 from ..objects import PointList
 
 
@@ -163,7 +166,7 @@ class IntegratedSaveForm(SaveForm):
         self.add_checkbox("preannot.", initial_val=False,
                           initial_txt="_preannot.png")
         self.add_checkbox("annot.", initial_txt="_annot.png")
-        self.add_checkbox("points", initial_txt="_points.txt")
+        self.add_checkbox("points", initial_txt="_points.json")
         # This reference is needed otherwise dialogs get garbage collected?
         self.dialog = None
         self.dialog_ms = save_dialog_timeout_ms
@@ -183,24 +186,43 @@ class IntegratedSaveForm(SaveForm):
         scene = self.main_window.graphics_view.scene()
         saved = {}
         if save_preannot and pa_pmi is not None:
-            p_path = os.path.join(self.save_path, img_name + suff_preannot)
-            scene.save_mask_as_image(pa_pmi, p_path, overwrite, verbose=False)
-            saved["preannotation mask"] = p_path
+            pa_path = os.path.join(self.save_path, img_name + suff_preannot)
+            if not overwrite:
+                pa_path = unique_filename(pa_path)
+            pa_msk_arr = scene.mask_as_bool_arr(pa_pmi)
+            self.save_bool_arr_as_img(pa_msk_arr, pa_path, overwrite)
+            saved["preannotation mask"] = pa_path
         if save_annot and a_pmi is not None:
             a_path = os.path.join(self.save_path, img_name + suff_annot)
-            scene.save_mask_as_image(a_pmi, a_path, overwrite, verbose=False)
+            if not overwrite:
+                a_path = unique_filename(a_path)
+            msk_arr = scene.mask_as_bool_arr(a_pmi)
+            self.save_bool_arr_as_img(msk_arr, a_path, overwrite)
             saved["annotation mask"] = a_path
         if save_points and scene.objects:
-            state_dict = {k.__name__: [elt.state() for elt in v]
+            state_dict = {k.__name__: [elt.state() for elt in v if elt.state()]
                           for k, v in scene.objects.items()}
             p_path = os.path.join(self.save_path, img_name + suff_points)
+            if not overwrite:
+                p_path = unique_filename(p_path)
             with open(p_path, "w") as f:
-                f.write(str(state_dict))
+                # f.write(str(state_dict))
+                json.dump(state_dict, f)
             saved["point lists"] = p_path
         #
         if saved:
             self.main_window.graphics_view.saved_state_tracker.save(
                 saved, self.dialog_ms)
+
+    def save_bool_arr_as_img(self, arr, outpath, overwrite_existing=False):
+        """
+        Output: RGB PNG image where false is black (0, 0, 0) and true is white
+        (255, 255, 255).
+        """
+        if not overwrite_existing:
+            outpath = unique_filename(outpath)
+        img = Image.fromarray(arr)
+        img.save(outpath)
 
 
 class IntegratedDisplayView(DisplayView):
@@ -226,7 +248,7 @@ class IntegratedDisplayView(DisplayView):
         self.annot_pmi = None
         #
         #
-        self._open_macro_command = None
+        self._current_clickdrag_action = None
         #
         self.saved_state_tracker = None
 
@@ -252,9 +274,9 @@ class IntegratedDisplayView(DisplayView):
         self._scene.update_image(img_arr)
         dummy_preannot = np.zeros(img_arr.shape[:2], dtype=np.bool)
         dummy_mask = np.zeros_like(dummy_preannot)
-        self.preannot_pmi = self._scene.add_mask_pmi(
+        self.preannot_pmi = self._scene.add_mask(
             dummy_preannot, initial_preannot_color)
-        self.annot_pmi = self._scene.add_mask_pmi(
+        self.annot_pmi = self._scene.add_mask(
             dummy_mask, initial_mask_color)
         self.fit_in_scene()
         #
@@ -306,7 +328,7 @@ class IntegratedDisplayView(DisplayView):
         #
         self.saved_state_tracker.edit()
 
-    # MASK EDITING ACTIONS
+    # MASK SINGLE-SHOT ACTIONS
     def change_preannot_pval(self, keep_p_value, discard_p_value=0.5):
         """
         Updates the preannot->mask threshold.
@@ -324,7 +346,7 @@ class IntegratedDisplayView(DisplayView):
         Updates the preannot mask color.
         """
         if self.preannot_pmi is not None:
-            m = self.scene().pixmap_item_to_np_mask(self.preannot_pmi)
+            m = self.scene().mask_as_bool_arr(self.preannot_pmi)
             self.preannot_pmi = self.scene().replace_mask_pmi(
                 self.preannot_pmi, m, rgba)
 
@@ -334,9 +356,20 @@ class IntegratedDisplayView(DisplayView):
 
         """
         if self.annot_pmi is not None:
-            m = self.scene().pixmap_item_to_np_mask(self.annot_pmi)
+            m = self.scene().mask_as_bool_arr(self.annot_pmi)
             self.annot_pmi = self.scene().replace_mask_pmi(
                 self.annot_pmi, m, rgba)
+
+    # MASK COMPOSITE ACTIONS
+    def _finish_clickdrag_action(self):
+        """
+        finishes any click+drag action that may be active (does nothing if
+        none active).
+        """
+        cmd = self._current_clickdrag_action
+        if cmd is not None:
+            cmd.finish(self.main_window.undo_stack)
+            self._current_clickdrag_action = None
 
     def _perform_composite_action(self, action_class, action_args,
                                   construction_args):
@@ -363,18 +396,20 @@ class IntegratedDisplayView(DisplayView):
           self._perform_composite_action(DrawCommand, [x, y],
                                          [pmi, rgba, brush_size])
         """
-        cmd = self._open_macro_command
+        cmd = self._current_clickdrag_action
         # if changed to this action without releasing the prior one, release it
-        if action_class is not cmd.__class__:
-            self._finish_composite_command()
-            cmd = self._open_macro_command  # this is None
+        action_changed = action_class is not cmd.__class__
+        cmd_finished = cmd is not None and cmd.finished
+        if action_changed:
+            self._finish_clickdrag_action()  # sets current action to None
+            cmd = self._current_clickdrag_action
         # if no open action of this class, create
-        if cmd is None:
+        if cmd is None or cmd_finished:
             cmd = action_class(*construction_args)
-            self._open_macro_command = cmd
+            self._current_clickdrag_action = cmd
         cmd.action(*action_args)
 
-    def paint_scene(self, x, y):
+    def clickdrag_action(self, x, y):
         """
         Paint to the currently selected mask, with the currently selected
         brush type, at the given position.
@@ -382,7 +417,7 @@ class IntegratedDisplayView(DisplayView):
         position from a mouse event has to be translated as follows::
 
           xpos, ypos = self.mapToScene(event.pos()).toTuple()
-          self.paint_scene(xpos, ypos)
+          self.clickdrag_action(xpos, ypos)
         """
         # retrieve pmi info
         # expected idx: 0 for preannot, 1 for annot
@@ -396,29 +431,28 @@ class IntegratedDisplayView(DisplayView):
         p_txt, e_txt, mp_txt = [self.main_window.PAINTER_TXT,
                                 self.main_window.ERASER_TXT,
                                 self.main_window.MASKED_PAINTER_TXT]
-        known_painters = {p_txt, e_txt, mp_txt}
         brush_type = self.main_window.paint_form.current_brush_type
         brush_size = self.main_window.paint_form.current_brush_size
-        assert brush_type in known_painters, \
-            "This GUI was designed for 3 brush types only:{}, got {}".format(
-                known_painters, brush_type)
         # if no open action exists, create:
+        did_something = False
         if brush_type == p_txt:
             rgba = self.scene().mask_pmis[pmi]
             self._perform_composite_action(DrawCommand, [x, y],
                                            [pmi, rgba, brush_size])
+            did_something = True
         elif brush_type == e_txt:
             self._perform_composite_action(EraseCommand, [x, y],
                                            [pmi, brush_size])
+            did_something = True
         elif brush_type == mp_txt:
             rgba = self.scene().mask_pmis[pmi]
             ref_pmi = self.preannot_pmi  # preannot is always the ref
             self._perform_composite_action(DrawOverlappingCommand, [x, y],
                                            [pmi, ref_pmi, rgba, brush_size])
-        else:
-            print("unknown brush type:", brush_type)
+            did_something = True
         #
-        self.saved_state_tracker.edit()
+        if did_something:
+            self.saved_state_tracker.edit()
 
     def add_point(self, x, y, close_after=False):
         """
@@ -426,8 +460,10 @@ class IntegratedDisplayView(DisplayView):
         if self.scene().img_pmi is None:
             return
         brush_size = self.main_window.paint_form.current_brush_size
-        self.scene().object_action(PointList, [x, y],
-                                   [self.scene(), brush_size])
+        self.scene().object_action(
+            PointList, [x, y, self.main_window.undo_stack],
+            [self.scene(), brush_size, (0, 0, 0, 100), (0, 0, 0, 255),
+             True])  # draw lines
         #
         if close_after:
             self.scene().close_current_object_action(
@@ -436,7 +472,6 @@ class IntegratedDisplayView(DisplayView):
     # EVENT HANDLING
     def on_left_press(self, event):
         """
-        Callback implementation, calls ``paint_scene``
         """
         xpos, ypos = self.mapToScene(event.pos()).toTuple()
         brush_type = self.main_window.paint_form.current_brush_type
@@ -445,39 +480,26 @@ class IntegratedDisplayView(DisplayView):
             has_ctrl = bool(mods & QtCore.Qt.ControlModifier)
             self.add_point(xpos, ypos, close_after=has_ctrl)
         else:
-            self.paint_scene(xpos, ypos)
+            self.clickdrag_action(xpos, ypos)
 
     def on_left_release(self, event):
         """
         If there is an open macro command, closes it and adds it to the undo
         stack
         """
-        self._finish_composite_command()
-        # This shows that the Object framework logic intersects with the mask
-        # update logic. at some point merge both
-        self.scene().close_current_object_action()
+        self._finish_clickdrag_action()
 
     def on_move(self, event, has_left, has_mid, has_right, this_pos, last_pos):
         """
-        Callback implementation, calls ``paint_scene`` if moving while pressing
-        left.
+        Callback implementation, calls ``clickdrag_action`` if moving while
+        pressing left.
         """
         super().on_move(event, has_left, has_mid, has_right, this_pos,
                         last_pos)
         #
         if has_left:
             xpos, ypos = self.mapToScene(event.pos()).toTuple()
-            self.paint_scene(xpos, ypos)
-
-    def _finish_composite_command(self):
-        """
-        If there is an open macro command, closes it and adds it to the undo
-        stack
-        """
-        cmd = self._open_macro_command
-        if cmd is not None:
-            cmd.finish(self.main_window.undo_stack)
-            self._open_macro_command = None
+            self.clickdrag_action(xpos, ypos)
 
 
 class CrackAnnotPaintForm(MaskPaintForm):

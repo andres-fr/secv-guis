@@ -1,11 +1,19 @@
 This is a tool for pixel-precise, semi-automated image annotation.
-To speed up usage, please consult the keyboard shortcuts.
+
+To speed up usage, please consult the keyboard shortcuts. The mouse
+shortcuts for the image area are as follows:
+
+* Left click and drag for painter, eraser and masked painter.
+* When adding points, left click to add another point to the current list,
+  and Control+left click to add the last point of the list.
+* Roll the mouse wheel to zoom in/out. Control+mouse wheel changes brush
+  size.
+* Right click and drag to slide through the image.
 
 There are 3 kinds of input for this tool: images, masks and preannotations.
 Images are always required: to load an image, select an image folder in the
 leftmost list and then double click on any entry. The corresponding image
-should appear in the right area. You can then navigate and zoom using the
-mouse wheel and right button.
+should appear in the right area.
 
 With each image, an empty "mask" and "preannotation mask" is loaded. You
 can load a previously saved mask by selecting an image in the second
@@ -24,6 +32,7 @@ Currently the following tools are supported to edit the masks:
 * Eraser: Opposite function to painter
 * Masked painter: Like painter, but paints only in the positions where the
   preannotation is active.
+* Points: Mark points on the image by clicking on positions.
 
 The tool provides undo/redo functionality to all of them.
 

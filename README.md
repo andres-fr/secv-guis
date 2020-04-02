@@ -12,6 +12,7 @@ This application allows the user to load, edit and save different annotations an
 
 ![](assets/bimask_demo_1.gif)
 ![](assets/bimask_demo_2.gif)
+![](assets/bimask_dots_demo.gif)
 
 ## Install and run:
 

@@ -20,6 +20,37 @@ from .utils import pixmap_to_arr
 # #############################################################################
 # ## SINGLE-SHOT COMMANDS
 # #############################################################################
+class UndoableLambda(QtWidgets.QUndoCommand):
+    """
+    This kind of functor can be used to create them on the spot and send them
+    to the UndoStack. Useful to split down a composite action in arbitrary
+    undo-able subactions. Usage example::
+
+      # in action ... do something ...
+      cmd = UndoableLambda("My partial action",
+                           lambda: print("undo"), lambda: print("redo"))
+      undo_stack.push(cmd)
+    """
+    def __init__(self, command_name, undo_fn, redo_fn, parent=None):
+        """
+        """
+        super().__init__(command_name, parent)
+        self.undo_fn = undo_fn
+        self.redo_fn = redo_fn
+
+    def undo(self):
+        """
+        """
+        self.undo_fn()
+
+    def redo(self):
+        """
+        """
+        self.redo_fn()
+
+# #############################################################################
+# ## SINGLE-SHOT COMMANDS
+# #############################################################################
 
 
 # #############################################################################
@@ -49,13 +80,13 @@ class CompositeCommand(QtWidgets.QUndoCommand):
         """
         """
         super().__init__(self.COMMAND_NAME, parent)
-        self._finished = False
+        self.finished = False
 
     def action(self):
         """
         Extend me!
         """
-        assert not self._finished, \
+        assert not self.finished, \
             "This CompositeCommand has already been finished!"
 
     def finish(self, undo_stack=None):
@@ -67,7 +98,7 @@ class CompositeCommand(QtWidgets.QUndoCommand):
         is called, no more ``action`` s are possible, so that the undo/redo
         actions stay frozen.
         """
-        self._finished = True
+        self.finished = True
         if undo_stack is not None:
             undo_stack.push(self)
 
@@ -140,7 +171,7 @@ class DrawCommand(CompositeCommand):
         Usually we don't override ``finish``, but since pixmaps are so big,
         we don't want to store the command if original and final are equal.
         """
-        self._finished = True
+        self.finished = True
         if undo_stack is not None:
             original_arr = pixmap_to_arr(self.original_pixmap,
                                          QtGui.QImage.Format_RGBA8888)

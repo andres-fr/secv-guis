@@ -10,10 +10,9 @@ functionality to annotate.
 
 import numpy as np
 from PySide2 import QtCore, QtWidgets, QtGui
-from PIL import Image
 #
 from .utils import RandomColorGenerator, rgb_arr_to_rgb_pixmap, \
-    bool_arr_to_rgba_pixmap, pixmap_to_arr, unique_filename
+    bool_arr_to_rgba_pixmap, pixmap_to_arr
 from .mouse_event_manager import MouseEventManager
 from .objects import ObjectContainer
 
@@ -72,7 +71,7 @@ class MaskedImageScene(QtWidgets.QGraphicsScene, ObjectContainer):
         o = QtCore.Qt.AscendingOrder if ascending else QtCore.Qt.AscendingOrder
         return super().items(o)
 
-    def add_mask_pmi(self, mask_arr, rgba=None, item_on_top=None):
+    def add_mask(self, mask_arr, rgba=None, item_on_top=None):
         """
         :param mask_arr: A ``np.bool(h, w)`` array.
         :param item_on_top: If given, mask will be added underneath that item.
@@ -107,7 +106,7 @@ class MaskedImageScene(QtWidgets.QGraphicsScene, ObjectContainer):
         #
         return pmi
 
-    def remove_mask_pmi(self, pmi):
+    def remove_mask(self, pmi):
         """
         :param pmi: The PixmapItem to remove. It has to be a mask added via
           ``add_mask``
@@ -134,36 +133,22 @@ class MaskedImageScene(QtWidgets.QGraphicsScene, ObjectContainer):
         old_rgba = self.mask_pmis[pmi]
         if new_rgba is None:
             new_rgba = old_rgba
-        new_pmi = self.add_mask_pmi(new_mask_arr, rgba=new_rgba,
-                                    item_on_top=pmi)
-        self.remove_mask_pmi(pmi)
+        new_pmi = self.add_mask(new_mask_arr, rgba=new_rgba, item_on_top=pmi)
+        self.remove_mask(pmi)
         return new_pmi
 
-    def pixmap_item_to_np_mask(self, pmi,
-                               pixmap_format=QtGui.QImage.Format_RGBA8888):
+    def mask_as_bool_arr(self, pmi):
         """
-        Converts given pixmap to np.bool, assuming all non-zero values
-        are True. Returns the bool array.
+        Asserts that the given ``pmi`` is in ``self.mask_pmis``, and returns
+        the map as ``np.bool(h, w)`` array, in which all non-zero values are
+        true.
         """
+        assert pmi in self.mask_pmis, "Given Item is not in mask_pmis!"
         # a has shape (h, w, 4) where 4->RGBA
+        pixmap_format = QtGui.QImage.Format_RGBA8888
         arr = pixmap_to_arr(pmi.pixmap(), pixmap_format)
         mask = (arr > 0).any(axis=-1)
         return mask
-
-    def save_mask_as_image(self, pmi, outpath,
-                           overwrite_existing=False, verbose=True):
-        """
-        Output: RGB PNG image where false is black (0, 0, 0) and true is white
-        (255, 255, 255).
-        """
-        if not overwrite_existing:
-            outpath = unique_filename(outpath)
-        m = self.pixmap_item_to_np_mask(pmi)
-        #
-        img = Image.fromarray(m)
-        img.save(outpath)
-        if verbose:
-            print("saved to", outpath)
 
 
 # #############################################################################
