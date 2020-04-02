@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>secv_guis.commands &mdash; secv_guis 0.1.0 documentation</title>
+  <title>secv_guis.commands &mdash; secv_guis 0.2.3 documentation</title>
   
 
   
@@ -56,7 +56,7 @@
             
             
               <div class="version">
-                0.1.0
+                0.2.3
               </div>
             
           
@@ -165,6 +165,45 @@
 <span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">pixmap_to_arr</span>
 
 
+<span class="c1"># #############################################################################</span>
+<span class="c1"># ## SINGLE-SHOT COMMANDS</span>
+<span class="c1"># #############################################################################</span>
+<div class="viewcode-block" id="UndoableLambda"><a class="viewcode-back" href="../../secv_guis.html#secv_guis.commands.UndoableLambda">[docs]</a><span class="k">class</span> <span class="nc">UndoableLambda</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QUndoCommand</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This kind of functor can be used to create them on the spot and send them</span>
+<span class="sd">    to the UndoStack. Useful to split down a composite action in arbitrary</span>
+<span class="sd">    undo-able subactions. Usage example::</span>
+
+<span class="sd">      # in action ... do something ...</span>
+<span class="sd">      cmd = UndoableLambda(&quot;My partial action&quot;,</span>
+<span class="sd">                           lambda: print(&quot;undo&quot;), lambda: print(&quot;redo&quot;))</span>
+<span class="sd">      undo_stack.push(cmd)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">command_name</span><span class="p">,</span> <span class="n">undo_fn</span><span class="p">,</span> <span class="n">redo_fn</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">command_name</span><span class="p">,</span> <span class="n">parent</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">undo_fn</span> <span class="o">=</span> <span class="n">undo_fn</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">redo_fn</span> <span class="o">=</span> <span class="n">redo_fn</span>
+
+<div class="viewcode-block" id="UndoableLambda.undo"><a class="viewcode-back" href="../../secv_guis.html#secv_guis.commands.UndoableLambda.undo">[docs]</a>    <span class="k">def</span> <span class="nf">undo</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">undo_fn</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="UndoableLambda.redo"><a class="viewcode-back" href="../../secv_guis.html#secv_guis.commands.UndoableLambda.redo">[docs]</a>    <span class="k">def</span> <span class="nf">redo</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">redo_fn</span><span class="p">()</span></div></div>
+
+<span class="c1"># #############################################################################</span>
+<span class="c1"># ## SINGLE-SHOT COMMANDS</span>
+<span class="c1"># #############################################################################</span>
+
+
+<span class="c1"># #############################################################################</span>
+<span class="c1"># ## COMPOSITE COMMANDS</span>
+<span class="c1"># #############################################################################</span>
 <div class="viewcode-block" id="CompositeCommand"><a class="viewcode-back" href="../../secv_guis.html#secv_guis.commands.CompositeCommand">[docs]</a><span class="k">class</span> <span class="nc">CompositeCommand</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QUndoCommand</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    In some cases like painting a stroke into a pixmap, it doesn&#39;t make sense</span>
@@ -189,13 +228,13 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">COMMAND_NAME</span><span class="p">,</span> <span class="n">parent</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_finished</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">finished</span> <span class="o">=</span> <span class="kc">False</span>
 
 <div class="viewcode-block" id="CompositeCommand.action"><a class="viewcode-back" href="../../secv_guis.html#secv_guis.commands.CompositeCommand.action">[docs]</a>    <span class="k">def</span> <span class="nf">action</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Extend me!</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">assert</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_finished</span><span class="p">,</span> \
+        <span class="k">assert</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">finished</span><span class="p">,</span> \
             <span class="s2">&quot;This CompositeCommand has already been finished!&quot;</span></div>
 
 <div class="viewcode-block" id="CompositeCommand.finish"><a class="viewcode-back" href="../../secv_guis.html#secv_guis.commands.CompositeCommand.finish">[docs]</a>    <span class="k">def</span> <span class="nf">finish</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">undo_stack</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -207,7 +246,7 @@
 <span class="sd">        is called, no more ``action`` s are possible, so that the undo/redo</span>
 <span class="sd">        actions stay frozen.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_finished</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">finished</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="k">if</span> <span class="n">undo_stack</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">undo_stack</span><span class="o">.</span><span class="n">push</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div></div>
 
@@ -280,7 +319,7 @@
 <span class="sd">        Usually we don&#39;t override ``finish``, but since pixmaps are so big,</span>
 <span class="sd">        we don&#39;t want to store the command if original and final are equal.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_finished</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">finished</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="k">if</span> <span class="n">undo_stack</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">original_arr</span> <span class="o">=</span> <span class="n">pixmap_to_arr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">original_pixmap</span><span class="p">,</span>
                                          <span class="n">QtGui</span><span class="o">.</span><span class="n">QImage</span><span class="o">.</span><span class="n">Format_RGBA8888</span><span class="p">)</span>

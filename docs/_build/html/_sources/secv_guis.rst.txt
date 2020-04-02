@@ -51,6 +51,14 @@ secv\_guis.mouse\_event\_manager module
     :undoc-members:
     :show-inheritance:
 
+secv\_guis.objects module
+-------------------------
+
+.. automodule:: secv_guis.objects
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 secv\_guis.utils module
 -----------------------
 

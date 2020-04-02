@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>secv_guis.bimask_app package &mdash; secv_guis 0.1.0 documentation</title>
+  <title>secv_guis.bimask_app package &mdash; secv_guis 0.2.3 documentation</title>
   
 
   
@@ -57,7 +57,7 @@
             
             
               <div class="version">
-                0.1.0
+                0.2.3
               </div>
             
           
@@ -100,6 +100,7 @@
 <li class="toctree-l2"><a class="reference internal" href="secv_guis.html#module-secv_guis.dialogs">secv_guis.dialogs module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="secv_guis.html#module-secv_guis.masked_scene">secv_guis.masked_scene module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="secv_guis.html#module-secv_guis.mouse_event_manager">secv_guis.mouse_event_manager module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="secv_guis.html#module-secv_guis.objects">secv_guis.objects module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="secv_guis.html#module-secv_guis.utils">secv_guis.utils module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="secv_guis.html#module-secv_guis">Module contents</a></li>
 </ul>
@@ -377,6 +378,11 @@ view of the image and the masks, together with a set of operations that can
 be done on them (painting, updating…), and the callback mechanisms to
 trigger those operations.</p>
 <dl class="method">
+<dt id="secv_guis.bimask_app.main_window.IntegratedDisplayView.add_point">
+<code class="descname">add_point</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>close_after=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/secv_guis/bimask_app/main_window.html#IntegratedDisplayView.add_point"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#secv_guis.bimask_app.main_window.IntegratedDisplayView.add_point" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="secv_guis.bimask_app.main_window.IntegratedDisplayView.change_annot_rgba">
 <code class="descname">change_annot_rgba</code><span class="sig-paren">(</span><em>rgba</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/secv_guis/bimask_app/main_window.html#IntegratedDisplayView.change_annot_rgba"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#secv_guis.bimask_app.main_window.IntegratedDisplayView.change_annot_rgba" title="Permalink to this definition">¶</a></dt>
 <dd><p>Updates the annot mask color.</p>
@@ -392,6 +398,19 @@ trigger those operations.</p>
 <dt id="secv_guis.bimask_app.main_window.IntegratedDisplayView.change_preannot_rgba">
 <code class="descname">change_preannot_rgba</code><span class="sig-paren">(</span><em>rgba</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/secv_guis/bimask_app/main_window.html#IntegratedDisplayView.change_preannot_rgba"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#secv_guis.bimask_app.main_window.IntegratedDisplayView.change_preannot_rgba" title="Permalink to this definition">¶</a></dt>
 <dd><p>Updates the preannot mask color.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="secv_guis.bimask_app.main_window.IntegratedDisplayView.clickdrag_action">
+<code class="descname">clickdrag_action</code><span class="sig-paren">(</span><em>x</em>, <em>y</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/secv_guis/bimask_app/main_window.html#IntegratedDisplayView.clickdrag_action"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#secv_guis.bimask_app.main_window.IntegratedDisplayView.clickdrag_action" title="Permalink to this definition">¶</a></dt>
+<dd><p>Paint to the currently selected mask, with the currently selected
+brush type, at the given position.
+The given <code class="docutils literal notranslate"><span class="pre">x,</span> <span class="pre">y</span></code> position is in ‘scene coordinates’, i.e. the
+position from a mouse event has to be translated as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">xpos</span><span class="p">,</span> <span class="n">ypos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mapToScene</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">pos</span><span class="p">())</span><span class="o">.</span><span class="n">toTuple</span><span class="p">()</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">clickdrag_action</span><span class="p">(</span><span class="n">xpos</span><span class="p">,</span> <span class="n">ypos</span><span class="p">)</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="method">
@@ -433,8 +452,7 @@ decides to abort.</td>
 <dl class="method">
 <dt id="secv_guis.bimask_app.main_window.IntegratedDisplayView.on_left_press">
 <code class="descname">on_left_press</code><span class="sig-paren">(</span><em>event</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/secv_guis/bimask_app/main_window.html#IntegratedDisplayView.on_left_press"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#secv_guis.bimask_app.main_window.IntegratedDisplayView.on_left_press" title="Permalink to this definition">¶</a></dt>
-<dd><p>Callback implementation, calls <code class="docutils literal notranslate"><span class="pre">paint_scene</span></code></p>
-</dd></dl>
+<dd></dd></dl>
 
 <dl class="method">
 <dt id="secv_guis.bimask_app.main_window.IntegratedDisplayView.on_left_release">
@@ -446,21 +464,8 @@ stack</p>
 <dl class="method">
 <dt id="secv_guis.bimask_app.main_window.IntegratedDisplayView.on_move">
 <code class="descname">on_move</code><span class="sig-paren">(</span><em>event</em>, <em>has_left</em>, <em>has_mid</em>, <em>has_right</em>, <em>this_pos</em>, <em>last_pos</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/secv_guis/bimask_app/main_window.html#IntegratedDisplayView.on_move"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#secv_guis.bimask_app.main_window.IntegratedDisplayView.on_move" title="Permalink to this definition">¶</a></dt>
-<dd><p>Callback implementation, calls <code class="docutils literal notranslate"><span class="pre">paint_scene</span></code> if moving while pressing
-left.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="secv_guis.bimask_app.main_window.IntegratedDisplayView.paint_scene">
-<code class="descname">paint_scene</code><span class="sig-paren">(</span><em>x</em>, <em>y</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/secv_guis/bimask_app/main_window.html#IntegratedDisplayView.paint_scene"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#secv_guis.bimask_app.main_window.IntegratedDisplayView.paint_scene" title="Permalink to this definition">¶</a></dt>
-<dd><p>Paint to the currently selected mask, with the currently selected
-brush type, at the given position.
-The given <code class="docutils literal notranslate"><span class="pre">x,</span> <span class="pre">y</span></code> position is in ‘scene coordinates’, i.e. the
-position from a mouse event has to be translated as follows:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">xpos</span><span class="p">,</span> <span class="n">ypos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mapToScene</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">pos</span><span class="p">())</span><span class="o">.</span><span class="n">toTuple</span><span class="p">()</span>
-<span class="bp">self</span><span class="o">.</span><span class="n">paint_scene</span><span class="p">(</span><span class="n">xpos</span><span class="p">,</span> <span class="n">ypos</span><span class="p">)</span>
-</pre></div>
-</div>
+<dd><p>Callback implementation, calls <code class="docutils literal notranslate"><span class="pre">clickdrag_action</span></code> if moving while
+pressing left.</p>
 </dd></dl>
 
 <dl class="method">
@@ -484,6 +489,13 @@ shape as the image.</p>
 <dd><p>Bases: <a class="reference internal" href="secv_guis.html#secv_guis.base_widgets.SaveForm" title="secv_guis.base_widgets.SaveForm"><code class="xref py py-class docutils literal notranslate"><span class="pre">secv_guis.base_widgets.SaveForm</span></code></a></p>
 <p>A <code class="docutils literal notranslate"><span class="pre">SaveForm</span></code> that implements this app’s logic, namely, it features 2
 masks, one for annot and one for preannot, and saves them as B&amp;W png.</p>
+<dl class="method">
+<dt id="secv_guis.bimask_app.main_window.IntegratedSaveForm.save_bool_arr_as_img">
+<code class="descname">save_bool_arr_as_img</code><span class="sig-paren">(</span><em>arr</em>, <em>outpath</em>, <em>overwrite_existing=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/secv_guis/bimask_app/main_window.html#IntegratedSaveForm.save_bool_arr_as_img"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#secv_guis.bimask_app.main_window.IntegratedSaveForm.save_bool_arr_as_img" title="Permalink to this definition">¶</a></dt>
+<dd><p>Output: RGB PNG image where false is black (0, 0, 0) and true is white
+(255, 255, 255).</p>
+</dd></dl>
+
 <dl class="method">
 <dt id="secv_guis.bimask_app.main_window.IntegratedSaveForm.save_masks">
 <code class="descname">save_masks</code><span class="sig-paren">(</span><em>states</em>, <em>suffixes</em>, <em>overwrite</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/secv_guis/bimask_app/main_window.html#IntegratedSaveForm.save_masks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#secv_guis.bimask_app.main_window.IntegratedSaveForm.save_masks" title="Permalink to this definition">¶</a></dt>
@@ -522,6 +534,11 @@ of all the used elements, together with the logic that binds them.</p>
 <dl class="attribute">
 <dt id="secv_guis.bimask_app.main_window.MainWindow.PAINTER_TXT">
 <code class="descname">PAINTER_TXT</code><em class="property"> = 'Painter'</em><a class="headerlink" href="#secv_guis.bimask_app.main_window.MainWindow.PAINTER_TXT" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="secv_guis.bimask_app.main_window.MainWindow.POINT_LIST_TXT">
+<code class="descname">POINT_LIST_TXT</code><em class="property"> = 'Points'</em><a class="headerlink" href="#secv_guis.bimask_app.main_window.MainWindow.POINT_LIST_TXT" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">

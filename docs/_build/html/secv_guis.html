@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>secv_guis package &mdash; secv_guis 0.1.0 documentation</title>
+  <title>secv_guis package &mdash; secv_guis 0.2.3 documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                0.1.0
+                0.2.3
               </div>
             
           
@@ -95,6 +95,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#module-secv_guis.dialogs">secv_guis.dialogs module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-secv_guis.masked_scene">secv_guis.masked_scene module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-secv_guis.mouse_event_manager">secv_guis.mouse_event_manager module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-secv_guis.objects">secv_guis.objects module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-secv_guis.utils">secv_guis.utils module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-secv_guis">Module contents</a></li>
 </ul>
@@ -631,6 +632,31 @@ See <code class="docutils literal notranslate"><span class="pre">DrawCommand</sp
 
 </dd></dl>
 
+<dl class="class">
+<dt id="secv_guis.commands.UndoableLambda">
+<em class="property">class </em><code class="descclassname">secv_guis.commands.</code><code class="descname">UndoableLambda</code><span class="sig-paren">(</span><em>command_name</em>, <em>undo_fn</em>, <em>redo_fn</em>, <em>parent=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/secv_guis/commands.html#UndoableLambda"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#secv_guis.commands.UndoableLambda" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">PySide2.QtWidgets.QUndoCommand</span></code></p>
+<p>This kind of functor can be used to create them on the spot and send them
+to the UndoStack. Useful to split down a composite action in arbitrary
+undo-able subactions. Usage example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># in action ... do something ...</span>
+<span class="n">cmd</span> <span class="o">=</span> <span class="n">UndoableLambda</span><span class="p">(</span><span class="s2">&quot;My partial action&quot;</span><span class="p">,</span>
+                     <span class="k">lambda</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;undo&quot;</span><span class="p">),</span> <span class="k">lambda</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;redo&quot;</span><span class="p">))</span>
+<span class="n">undo_stack</span><span class="o">.</span><span class="n">push</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="secv_guis.commands.UndoableLambda.redo">
+<code class="descname">redo</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/secv_guis/commands.html#UndoableLambda.redo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#secv_guis.commands.UndoableLambda.redo" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="secv_guis.commands.UndoableLambda.undo">
+<code class="descname">undo</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/secv_guis/commands.html#UndoableLambda.undo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#secv_guis.commands.UndoableLambda.undo" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 </div>
 <div class="section" id="module-secv_guis.dialogs">
 <span id="secv-guis-dialogs-module"></span><h2>secv_guis.dialogs module<a class="headerlink" href="#module-secv_guis.dialogs" title="Permalink to this headline">¶</a></h2>
@@ -854,7 +880,7 @@ to dynamically and easily change the perspective on the scene.</p>
 <dl class="class">
 <dt id="secv_guis.masked_scene.MaskedImageScene">
 <em class="property">class </em><code class="descclassname">secv_guis.masked_scene.</code><code class="descname">MaskedImageScene</code><span class="sig-paren">(</span><em>img_arr=None</em>, <em>parent=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/secv_guis/masked_scene.html#MaskedImageScene"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#secv_guis.masked_scene.MaskedImageScene" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">PySide2.QtWidgets.QGraphicsScene</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">PySide2.QtWidgets.QGraphicsScene</span></code>, <a class="reference internal" href="#secv_guis.objects.ObjectContainer" title="secv_guis.objects.ObjectContainer"><code class="xref py py-class docutils literal notranslate"><span class="pre">secv_guis.objects.ObjectContainer</span></code></a></p>
 <p>Basic area that allows to display a color image, together with a set of
 binary masks on top of it.</p>
 <dl class="attribute">
@@ -863,8 +889,8 @@ binary masks on top of it.</p>
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="secv_guis.masked_scene.MaskedImageScene.add_mask_pmi">
-<code class="descname">add_mask_pmi</code><span class="sig-paren">(</span><em>mask_arr</em>, <em>rgba=None</em>, <em>item_on_top=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/secv_guis/masked_scene.html#MaskedImageScene.add_mask_pmi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#secv_guis.masked_scene.MaskedImageScene.add_mask_pmi" title="Permalink to this definition">¶</a></dt>
+<dt id="secv_guis.masked_scene.MaskedImageScene.add_mask">
+<code class="descname">add_mask</code><span class="sig-paren">(</span><em>mask_arr</em>, <em>rgba=None</em>, <em>item_on_top=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/secv_guis/masked_scene.html#MaskedImageScene.add_mask"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#secv_guis.masked_scene.MaskedImageScene.add_mask" title="Permalink to this definition">¶</a></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -900,21 +926,22 @@ foreground.</td>
 </dd></dl>
 
 <dl class="method">
+<dt id="secv_guis.masked_scene.MaskedImageScene.mask_as_bool_arr">
+<code class="descname">mask_as_bool_arr</code><span class="sig-paren">(</span><em>pmi</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/secv_guis/masked_scene.html#MaskedImageScene.mask_as_bool_arr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#secv_guis.masked_scene.MaskedImageScene.mask_as_bool_arr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Asserts that the given <code class="docutils literal notranslate"><span class="pre">pmi</span></code> is in <code class="docutils literal notranslate"><span class="pre">self.mask_pmis</span></code>, and returns
+the map as <code class="docutils literal notranslate"><span class="pre">np.bool(h,</span> <span class="pre">w)</span></code> array, in which all non-zero values are
+true.</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="secv_guis.masked_scene.MaskedImageScene.num_items">
 <code class="descname">num_items</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/secv_guis/masked_scene.html#MaskedImageScene.num_items"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#secv_guis.masked_scene.MaskedImageScene.num_items" title="Permalink to this definition">¶</a></dt>
 <dd><p>Number of items in this scene, ordered from foreground to background.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="secv_guis.masked_scene.MaskedImageScene.pixmap_item_to_np_mask">
-<code class="descname">pixmap_item_to_np_mask</code><span class="sig-paren">(</span><em>pmi</em>, <em>pixmap_format=PySide2.QtGui.QImage.Format.Format_RGBA8888</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/secv_guis/masked_scene.html#MaskedImageScene.pixmap_item_to_np_mask"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#secv_guis.masked_scene.MaskedImageScene.pixmap_item_to_np_mask" title="Permalink to this definition">¶</a></dt>
-<dd><p>Converts given pixmap to np.bool, assuming all non-zero values
-are True. Returns the bool array.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="secv_guis.masked_scene.MaskedImageScene.remove_mask_pmi">
-<code class="descname">remove_mask_pmi</code><span class="sig-paren">(</span><em>pmi</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/secv_guis/masked_scene.html#MaskedImageScene.remove_mask_pmi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#secv_guis.masked_scene.MaskedImageScene.remove_mask_pmi" title="Permalink to this definition">¶</a></dt>
+<dt id="secv_guis.masked_scene.MaskedImageScene.remove_mask">
+<code class="descname">remove_mask</code><span class="sig-paren">(</span><em>pmi</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/secv_guis/masked_scene.html#MaskedImageScene.remove_mask"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#secv_guis.masked_scene.MaskedImageScene.remove_mask" title="Permalink to this definition">¶</a></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -937,13 +964,6 @@ way: either succeeds or does nothing.</p>
 <p class="last">The input <code class="docutils literal notranslate"><span class="pre">pmi</span></code> gets removed from the scene and the reference
 becomes invalid. Use the reference returned by this function instead.</p>
 </div>
-</dd></dl>
-
-<dl class="method">
-<dt id="secv_guis.masked_scene.MaskedImageScene.save_mask_as_image">
-<code class="descname">save_mask_as_image</code><span class="sig-paren">(</span><em>pmi</em>, <em>outpath</em>, <em>overwrite_existing=False</em>, <em>verbose=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/secv_guis/masked_scene.html#MaskedImageScene.save_mask_as_image"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#secv_guis.masked_scene.MaskedImageScene.save_mask_as_image" title="Permalink to this definition">¶</a></dt>
-<dd><p>Output: RGB PNG image where false is black (0, 0, 0) and true is white
-(255, 255, 255).</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -1070,6 +1090,134 @@ MouseEventManager.__init__(self, …)</dd>
 <code class="descname">wheelEvent</code><span class="sig-paren">(</span><em>event</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/secv_guis/mouse_event_manager.html#MouseEventManager.wheelEvent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#secv_guis.mouse_event_manager.MouseEventManager.wheelEvent" title="Permalink to this definition">¶</a></dt>
 <dd><p>Override me. This is a simple wrapper, but may include functionality
 like storing positions if needed.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-secv_guis.objects">
+<span id="secv-guis-objects-module"></span><h2>secv_guis.objects module<a class="headerlink" href="#module-secv_guis.objects" title="Permalink to this headline">¶</a></h2>
+<p>Object composite commands are intended for composite objects (like e.g.
+a train of points). The main difference with the regular commands is that
+they implement a <code class="docutils literal notranslate"><span class="pre">state</span></code> method (which e.g. for a train of points returns
+a list of (x, y) tuples), and a <code class="docutils literal notranslate"><span class="pre">clear</span></code> method, which allows to ‘remove’
+the object without having to roll back or break the undo queue.</p>
+<dl class="class">
+<dt id="secv_guis.objects.ObjectContainer">
+<em class="property">class </em><code class="descclassname">secv_guis.objects.</code><code class="descname">ObjectContainer</code><a class="reference internal" href="_modules/secv_guis/objects.html#ObjectContainer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#secv_guis.objects.ObjectContainer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This class is a Mixin. When a <code class="docutils literal notranslate"><span class="pre">QGraphicsScene</span></code> inherits from it, it
+acquires functionality to add multiple composite objects from this module.</p>
+<dl class="method">
+<dt id="secv_guis.objects.ObjectContainer.close_current_object_action">
+<code class="descname">close_current_object_action</code><span class="sig-paren">(</span><em>undo_stack=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/secv_guis/objects.html#ObjectContainer.close_current_object_action"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#secv_guis.objects.ObjectContainer.close_current_object_action" title="Permalink to this definition">¶</a></dt>
+<dd><p>If there is an open object action, closes it and optionally adds it to
+the undo stack</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="secv_guis.objects.ObjectContainer.object_action">
+<code class="descname">object_action</code><span class="sig-paren">(</span><em>obj_class</em>, <em>action_args</em>, <em>obj_instantiation_args</em>, <em>undo_stack=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/secv_guis/objects.html#ObjectContainer.object_action"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#secv_guis.objects.ObjectContainer.object_action" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function implements a protocol to add composite objects to the
+scene.</p>
+<ol class="arabic simple">
+<li><dl class="first docutils">
+<dt>If a different composite action was running, it closes it and starts</dt>
+<dd>this one, adding it to <code class="docutils literal notranslate"><span class="pre">self.objects</span></code>.</dd>
+</dl>
+</li>
+<li>If no composite action was running, starts this one and adds it.</li>
+<li>If <code class="docutils literal notranslate"><span class="pre">obj_class</span></code> is already running, does nothing here.</li>
+</ol>
+<p>In all cases, including if <code class="docutils literal notranslate"><span class="pre">obj_class</span></code> was already running,
+performs the action <code class="docutils literal notranslate"><span class="pre">obj.action(*action_args)</span></code>.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The scene simply calls the object’s action. The object is responsible
+for keeping track of the <code class="docutils literal notranslate"><span class="pre">scene</span> <span class="pre">items</span></code> it generates, and also
+removing/adding them to the scene when needed.</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>obj_instantiation_args</strong> – If this action needs to be started, it
+will be called via <code class="docutils literal notranslate"><span class="pre">cmd</span> <span class="pre">=</span> <span class="pre">action_class(*instantiation_args)</span></code></li>
+<li><strong>action_args</strong> – The action will be called with this args.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Usage example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># adds a point to the existing cloud or starts one otherwise</span>
+<span class="n">scene</span><span class="o">.</span><span class="n">object_action</span><span class="p">(</span><span class="n">ExamplePointCloud</span><span class="p">,</span> <span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">],</span>
+                    <span class="p">[</span><span class="n">cloud_color</span><span class="p">,</span> <span class="n">points_size</span><span class="o">...</span><span class="p">])</span>
+<span class="c1"># check the state of the last added point cloud (this one):</span>
+<span class="n">scene</span><span class="o">.</span><span class="n">objects</span><span class="p">[</span><span class="n">ExamplePointCloud</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">state</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="secv_guis.objects.PointList">
+<em class="property">class </em><code class="descclassname">secv_guis.objects.</code><code class="descname">PointList</code><span class="sig-paren">(</span><em>scene</em>, <em>diameter</em>, <em>fill_rgba=(100</em>, <em>100</em>, <em>100</em>, <em>100)</em>, <em>contour_rgba=(0</em>, <em>0</em>, <em>0</em>, <em>255)</em>, <em>draw_lines_between_dots=False</em>, <em>comp_mode=PySide2.QtGui.QPainter.CompositionMode.CompositionMode_SourceOver</em>, <em>parent=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/secv_guis/objects.html#PointList"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#secv_guis.objects.PointList" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#secv_guis.commands.CompositeCommand" title="secv_guis.commands.CompositeCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">secv_guis.commands.CompositeCommand</span></code></a></p>
+<p>This class provides functionality to add circles to a scene (optionally
+connected by lines), and to return their centers as a list of <code class="docutils literal notranslate"><span class="pre">(x,</span> <span class="pre">y)</span></code>
+positions. It also</p>
+<dl class="attribute">
+<dt id="secv_guis.objects.PointList.COMMAND_NAME">
+<code class="descname">COMMAND_NAME</code><em class="property"> = 'Draw point list'</em><a class="headerlink" href="#secv_guis.objects.PointList.COMMAND_NAME" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="secv_guis.objects.PointList.action">
+<code class="descname">action</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>undo_stack=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/secv_guis/objects.html#PointList.action"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#secv_guis.objects.PointList.action" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a new point at given position.
+:param undo_stack: If given, this action is added to the undo stack.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="secv_guis.objects.PointList.clear">
+<code class="descname">clear</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/secv_guis/objects.html#PointList.clear"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#secv_guis.objects.PointList.clear" title="Permalink to this definition">¶</a></dt>
+<dd><p>Removes all the active points from the datastructure and the scene.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="secv_guis.objects.PointList.finish">
+<code class="descname">finish</code><span class="sig-paren">(</span><em>undo_stack=NotImplemented</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/secv_guis/objects.html#PointList.finish"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#secv_guis.objects.PointList.finish" title="Permalink to this definition">¶</a></dt>
+<dd><p>Simply sets <code class="docutils literal notranslate"><span class="pre">self.finished</span></code> to true, because the undo stack gets
+the separate <code class="docutils literal notranslate"><span class="pre">actions</span></code> instead of the whole composite one.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="secv_guis.objects.PointList.redo">
+<code class="descname">redo</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/secv_guis/objects.html#PointList.redo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#secv_guis.objects.PointList.redo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Unused</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="secv_guis.objects.PointList.state">
+<code class="descname">state</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/secv_guis/objects.html#PointList.state"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#secv_guis.objects.PointList.state" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">A list in the form <code class="docutils literal notranslate"><span class="pre">[(x1,</span> <span class="pre">y1),</span> <span class="pre">...]</span></code> with the center
+of the currently active points.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="secv_guis.objects.PointList.undo">
+<code class="descname">undo</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/secv_guis/objects.html#PointList.undo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#secv_guis.objects.PointList.undo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Unused</p>
 </dd></dl>
 
 </dd></dl>

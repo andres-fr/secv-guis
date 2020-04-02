@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>secv_guis.bimask_app.main_window &mdash; secv_guis 0.1.0 documentation</title>
+  <title>secv_guis.bimask_app.main_window &mdash; secv_guis 0.2.3 documentation</title>
   
 
   
@@ -56,7 +56,7 @@
             
             
               <div class="version">
-                0.1.0
+                0.2.3
               </div>
             
           
@@ -162,15 +162,19 @@
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">from</span> <span class="nn">PySide2</span> <span class="kn">import</span> <span class="n">QtCore</span><span class="p">,</span> <span class="n">QtWidgets</span><span class="p">,</span> <span class="n">QtGui</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">PIL</span> <span class="kn">import</span> <span class="n">Image</span>
+<span class="kn">import</span> <span class="nn">json</span>
 <span class="c1">#</span>
 <span class="kn">from</span> <span class="nn">skimage.filters</span> <span class="kn">import</span> <span class="n">apply_hysteresis_threshold</span>
 <span class="c1">#</span>
-<span class="kn">from</span> <span class="nn">..masked_scene</span> <span class="kn">import</span> <span class="n">MaskedImageScene</span><span class="p">,</span> <span class="n">DisplayView</span>
-<span class="kn">from</span> <span class="nn">..base_widgets</span> <span class="kn">import</span> <span class="n">FileList</span><span class="p">,</span> <span class="n">MaskPaintForm</span><span class="p">,</span> <span class="n">SaveForm</span>
-<span class="kn">from</span> <span class="nn">..utils</span> <span class="kn">import</span> <span class="n">load_img_and_exif</span>
-<span class="kn">from</span> <span class="nn">..commands</span> <span class="kn">import</span> <span class="n">DrawCommand</span><span class="p">,</span> <span class="n">EraseCommand</span><span class="p">,</span> <span class="n">DrawOverlappingCommand</span>
 <span class="kn">from</span> <span class="nn">.dialogs</span> <span class="kn">import</span> <span class="n">InstructionsDialog</span><span class="p">,</span> <span class="n">AboutDialog</span><span class="p">,</span> <span class="n">KeymapsDialog</span><span class="p">,</span> \
     <span class="n">SavedStateTracker</span>
+<span class="c1">#</span>
+<span class="kn">from</span> <span class="nn">..masked_scene</span> <span class="kn">import</span> <span class="n">MaskedImageScene</span><span class="p">,</span> <span class="n">DisplayView</span>
+<span class="kn">from</span> <span class="nn">..base_widgets</span> <span class="kn">import</span> <span class="n">FileList</span><span class="p">,</span> <span class="n">MaskPaintForm</span><span class="p">,</span> <span class="n">SaveForm</span>
+<span class="kn">from</span> <span class="nn">..utils</span> <span class="kn">import</span> <span class="n">load_img_and_exif</span><span class="p">,</span> <span class="n">unique_filename</span>
+<span class="kn">from</span> <span class="nn">..commands</span> <span class="kn">import</span> <span class="n">DrawCommand</span><span class="p">,</span> <span class="n">EraseCommand</span><span class="p">,</span> <span class="n">DrawOverlappingCommand</span>
+<span class="kn">from</span> <span class="nn">..objects</span> <span class="kn">import</span> <span class="n">PointList</span>
 
 
 <span class="c1"># #############################################################################</span>
@@ -310,6 +314,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">add_checkbox</span><span class="p">(</span><span class="s2">&quot;preannot.&quot;</span><span class="p">,</span> <span class="n">initial_val</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                           <span class="n">initial_txt</span><span class="o">=</span><span class="s2">&quot;_preannot.png&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_checkbox</span><span class="p">(</span><span class="s2">&quot;annot.&quot;</span><span class="p">,</span> <span class="n">initial_txt</span><span class="o">=</span><span class="s2">&quot;_annot.png&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_checkbox</span><span class="p">(</span><span class="s2">&quot;points&quot;</span><span class="p">,</span> <span class="n">initial_txt</span><span class="o">=</span><span class="s2">&quot;_points.json&quot;</span><span class="p">)</span>
         <span class="c1"># This reference is needed otherwise dialogs get garbage collected?</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dialog</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dialog_ms</span> <span class="o">=</span> <span class="n">save_dialog_timeout_ms</span>
@@ -319,28 +324,53 @@
 <span class="sd">        Overriden method that we don&#39;t call directly. See ``SaveForm`` for</span>
 <span class="sd">        interface details.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">save_preannot</span><span class="p">,</span> <span class="n">save_annot</span> <span class="o">=</span> <span class="n">states</span>
-        <span class="n">suff_preannot</span><span class="p">,</span> <span class="n">suff_annot</span> <span class="o">=</span> <span class="n">suffixes</span>
+        <span class="n">save_preannot</span><span class="p">,</span> <span class="n">save_annot</span><span class="p">,</span> <span class="n">save_points</span> <span class="o">=</span> <span class="n">states</span>
+        <span class="n">suff_preannot</span><span class="p">,</span> <span class="n">suff_annot</span><span class="p">,</span> <span class="n">suff_points</span> <span class="o">=</span> <span class="n">suffixes</span>
         <span class="n">img_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">main_window</span><span class="o">.</span><span class="n">current_img_basename</span>
         <span class="c1">#</span>
         <span class="n">a_pmi</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">main_window</span><span class="o">.</span><span class="n">graphics_view</span><span class="o">.</span><span class="n">annot_pmi</span>
         <span class="n">pa_pmi</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">main_window</span><span class="o">.</span><span class="n">graphics_view</span><span class="o">.</span><span class="n">preannot_pmi</span>
         <span class="c1">#</span>
+        <span class="n">scene</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">main_window</span><span class="o">.</span><span class="n">graphics_view</span><span class="o">.</span><span class="n">scene</span><span class="p">()</span>
         <span class="n">saved</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">if</span> <span class="n">save_preannot</span> <span class="ow">and</span> <span class="n">pa_pmi</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">p_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">save_path</span><span class="p">,</span> <span class="n">img_name</span> <span class="o">+</span> <span class="n">suff_preannot</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">main_window</span><span class="o">.</span><span class="n">graphics_view</span><span class="o">.</span><span class="n">scene</span><span class="p">()</span><span class="o">.</span><span class="n">save_mask_as_image</span><span class="p">(</span>
-                <span class="n">pa_pmi</span><span class="p">,</span> <span class="n">p_path</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-            <span class="n">saved</span><span class="p">[</span><span class="s2">&quot;preannotation mask&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">p_path</span>
+            <span class="n">pa_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">save_path</span><span class="p">,</span> <span class="n">img_name</span> <span class="o">+</span> <span class="n">suff_preannot</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">overwrite</span><span class="p">:</span>
+                <span class="n">pa_path</span> <span class="o">=</span> <span class="n">unique_filename</span><span class="p">(</span><span class="n">pa_path</span><span class="p">)</span>
+            <span class="n">pa_msk_arr</span> <span class="o">=</span> <span class="n">scene</span><span class="o">.</span><span class="n">mask_as_bool_arr</span><span class="p">(</span><span class="n">pa_pmi</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">save_bool_arr_as_img</span><span class="p">(</span><span class="n">pa_msk_arr</span><span class="p">,</span> <span class="n">pa_path</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">)</span>
+            <span class="n">saved</span><span class="p">[</span><span class="s2">&quot;preannotation mask&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pa_path</span>
         <span class="k">if</span> <span class="n">save_annot</span> <span class="ow">and</span> <span class="n">a_pmi</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">a_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">save_path</span><span class="p">,</span> <span class="n">img_name</span> <span class="o">+</span> <span class="n">suff_annot</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">main_window</span><span class="o">.</span><span class="n">graphics_view</span><span class="o">.</span><span class="n">scene</span><span class="p">()</span><span class="o">.</span><span class="n">save_mask_as_image</span><span class="p">(</span>
-                <span class="n">a_pmi</span><span class="p">,</span> <span class="n">a_path</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">overwrite</span><span class="p">:</span>
+                <span class="n">a_path</span> <span class="o">=</span> <span class="n">unique_filename</span><span class="p">(</span><span class="n">a_path</span><span class="p">)</span>
+            <span class="n">msk_arr</span> <span class="o">=</span> <span class="n">scene</span><span class="o">.</span><span class="n">mask_as_bool_arr</span><span class="p">(</span><span class="n">a_pmi</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">save_bool_arr_as_img</span><span class="p">(</span><span class="n">msk_arr</span><span class="p">,</span> <span class="n">a_path</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">)</span>
             <span class="n">saved</span><span class="p">[</span><span class="s2">&quot;annotation mask&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">a_path</span>
+        <span class="k">if</span> <span class="n">save_points</span> <span class="ow">and</span> <span class="n">scene</span><span class="o">.</span><span class="n">objects</span><span class="p">:</span>
+            <span class="n">state_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="o">.</span><span class="vm">__name__</span><span class="p">:</span> <span class="p">[</span><span class="n">elt</span><span class="o">.</span><span class="n">state</span><span class="p">()</span> <span class="k">for</span> <span class="n">elt</span> <span class="ow">in</span> <span class="n">v</span> <span class="k">if</span> <span class="n">elt</span><span class="o">.</span><span class="n">state</span><span class="p">()]</span>
+                          <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">scene</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+            <span class="n">p_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">save_path</span><span class="p">,</span> <span class="n">img_name</span> <span class="o">+</span> <span class="n">suff_points</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">overwrite</span><span class="p">:</span>
+                <span class="n">p_path</span> <span class="o">=</span> <span class="n">unique_filename</span><span class="p">(</span><span class="n">p_path</span><span class="p">)</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">p_path</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="c1"># f.write(str(state_dict))</span>
+                <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">state_dict</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+            <span class="n">saved</span><span class="p">[</span><span class="s2">&quot;point lists&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">p_path</span>
         <span class="c1">#</span>
         <span class="k">if</span> <span class="n">saved</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">main_window</span><span class="o">.</span><span class="n">graphics_view</span><span class="o">.</span><span class="n">saved_state_tracker</span><span class="o">.</span><span class="n">save</span><span class="p">(</span>
-                <span class="n">saved</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dialog_ms</span><span class="p">)</span></div></div>
+                <span class="n">saved</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dialog_ms</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="IntegratedSaveForm.save_bool_arr_as_img"><a class="viewcode-back" href="../../../secv_guis.bimask_app.html#secv_guis.bimask_app.main_window.IntegratedSaveForm.save_bool_arr_as_img">[docs]</a>    <span class="k">def</span> <span class="nf">save_bool_arr_as_img</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">arr</span><span class="p">,</span> <span class="n">outpath</span><span class="p">,</span> <span class="n">overwrite_existing</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Output: RGB PNG image where false is black (0, 0, 0) and true is white</span>
+<span class="sd">        (255, 255, 255).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">overwrite_existing</span><span class="p">:</span>
+            <span class="n">outpath</span> <span class="o">=</span> <span class="n">unique_filename</span><span class="p">(</span><span class="n">outpath</span><span class="p">)</span>
+        <span class="n">img</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">fromarray</span><span class="p">(</span><span class="n">arr</span><span class="p">)</span>
+        <span class="n">img</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">outpath</span><span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="IntegratedDisplayView"><a class="viewcode-back" href="../../../secv_guis.bimask_app.html#secv_guis.bimask_app.main_window.IntegratedDisplayView">[docs]</a><span class="k">class</span> <span class="nc">IntegratedDisplayView</span><span class="p">(</span><span class="n">DisplayView</span><span class="p">):</span>
@@ -364,7 +394,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_preannot_pmap</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">preannot_pmi</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">annot_pmi</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_open_macro_command</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="c1">#</span>
+        <span class="c1">#</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_current_clickdrag_action</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="c1">#</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">saved_state_tracker</span> <span class="o">=</span> <span class="kc">None</span>
 
@@ -390,9 +422,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_scene</span><span class="o">.</span><span class="n">update_image</span><span class="p">(</span><span class="n">img_arr</span><span class="p">)</span>
         <span class="n">dummy_preannot</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">img_arr</span><span class="o">.</span><span class="n">shape</span><span class="p">[:</span><span class="mi">2</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">bool</span><span class="p">)</span>
         <span class="n">dummy_mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">dummy_preannot</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">preannot_pmi</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scene</span><span class="o">.</span><span class="n">add_mask_pmi</span><span class="p">(</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">preannot_pmi</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scene</span><span class="o">.</span><span class="n">add_mask</span><span class="p">(</span>
             <span class="n">dummy_preannot</span><span class="p">,</span> <span class="n">initial_preannot_color</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">annot_pmi</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scene</span><span class="o">.</span><span class="n">add_mask_pmi</span><span class="p">(</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">annot_pmi</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scene</span><span class="o">.</span><span class="n">add_mask</span><span class="p">(</span>
             <span class="n">dummy_mask</span><span class="p">,</span> <span class="n">initial_mask_color</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fit_in_scene</span><span class="p">()</span>
         <span class="c1">#</span>
@@ -444,7 +476,7 @@
         <span class="c1">#</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">saved_state_tracker</span><span class="o">.</span><span class="n">edit</span><span class="p">()</span></div>
 
-    <span class="c1"># MASK EDITING ACTIONS</span>
+    <span class="c1"># MASK SINGLE-SHOT ACTIONS</span>
 <div class="viewcode-block" id="IntegratedDisplayView.change_preannot_pval"><a class="viewcode-back" href="../../../secv_guis.bimask_app.html#secv_guis.bimask_app.main_window.IntegratedDisplayView.change_preannot_pval">[docs]</a>    <span class="k">def</span> <span class="nf">change_preannot_pval</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">keep_p_value</span><span class="p">,</span> <span class="n">discard_p_value</span><span class="o">=</span><span class="mf">0.5</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Updates the preannot-&gt;mask threshold.</span>
@@ -462,7 +494,7 @@
 <span class="sd">        Updates the preannot mask color.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">preannot_pmi</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">m</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scene</span><span class="p">()</span><span class="o">.</span><span class="n">pixmap_item_to_np_mask</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">preannot_pmi</span><span class="p">)</span>
+            <span class="n">m</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scene</span><span class="p">()</span><span class="o">.</span><span class="n">mask_as_bool_arr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">preannot_pmi</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">preannot_pmi</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scene</span><span class="p">()</span><span class="o">.</span><span class="n">replace_mask_pmi</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">preannot_pmi</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">rgba</span><span class="p">)</span></div>
 
@@ -472,11 +504,60 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">annot_pmi</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">m</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scene</span><span class="p">()</span><span class="o">.</span><span class="n">pixmap_item_to_np_mask</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">annot_pmi</span><span class="p">)</span>
+            <span class="n">m</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scene</span><span class="p">()</span><span class="o">.</span><span class="n">mask_as_bool_arr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">annot_pmi</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">annot_pmi</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scene</span><span class="p">()</span><span class="o">.</span><span class="n">replace_mask_pmi</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">annot_pmi</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">rgba</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="IntegratedDisplayView.paint_scene"><a class="viewcode-back" href="../../../secv_guis.bimask_app.html#secv_guis.bimask_app.main_window.IntegratedDisplayView.paint_scene">[docs]</a>    <span class="k">def</span> <span class="nf">paint_scene</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+    <span class="c1"># MASK COMPOSITE ACTIONS</span>
+    <span class="k">def</span> <span class="nf">_finish_clickdrag_action</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        finishes any click+drag action that may be active (does nothing if</span>
+<span class="sd">        none active).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">cmd</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_current_clickdrag_action</span>
+        <span class="k">if</span> <span class="n">cmd</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">cmd</span><span class="o">.</span><span class="n">finish</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">main_window</span><span class="o">.</span><span class="n">undo_stack</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_current_clickdrag_action</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">_perform_composite_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">action_class</span><span class="p">,</span> <span class="n">action_args</span><span class="p">,</span>
+                                  <span class="n">construction_args</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function is the recommended way to perform a composite</span>
+<span class="sd">        action for the following reasons:</span>
+
+<span class="sd">        1. If ``action_class`` is already running, it simply continues it.</span>
+<span class="sd">        2. If a different composite action was running, it closes it and starts</span>
+<span class="sd">            this one.</span>
+<span class="sd">        3. If no composite action was running, starts this one</span>
+
+<span class="sd">        And finally performs the action.</span>
+
+<span class="sd">        :param construction_args: If this action needs to be started, it will</span>
+<span class="sd">          be called via ``cmd = action_class(*construction_args)``</span>
+<span class="sd">        :param action_args: The command will be called via ``cmd(action_args)``</span>
+
+<span class="sd">        Usage example::</span>
+<span class="sd">          x, y = current_action_position...</span>
+<span class="sd">          pmi = ...</span>
+<span class="sd">          brush_size = ...</span>
+<span class="sd">          rgba = self.scene().mask_pmis[pmi]</span>
+<span class="sd">          self._perform_composite_action(DrawCommand, [x, y],</span>
+<span class="sd">                                         [pmi, rgba, brush_size])</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">cmd</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_current_clickdrag_action</span>
+        <span class="c1"># if changed to this action without releasing the prior one, release it</span>
+        <span class="n">action_changed</span> <span class="o">=</span> <span class="n">action_class</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">cmd</span><span class="o">.</span><span class="vm">__class__</span>
+        <span class="n">cmd_finished</span> <span class="o">=</span> <span class="n">cmd</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">cmd</span><span class="o">.</span><span class="n">finished</span>
+        <span class="k">if</span> <span class="n">action_changed</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_finish_clickdrag_action</span><span class="p">()</span>  <span class="c1"># sets current action to None</span>
+            <span class="n">cmd</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_current_clickdrag_action</span>
+        <span class="c1"># if no open action of this class, create</span>
+        <span class="k">if</span> <span class="n">cmd</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">cmd_finished</span><span class="p">:</span>
+            <span class="n">cmd</span> <span class="o">=</span> <span class="n">action_class</span><span class="p">(</span><span class="o">*</span><span class="n">construction_args</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_current_clickdrag_action</span> <span class="o">=</span> <span class="n">cmd</span>
+        <span class="n">cmd</span><span class="o">.</span><span class="n">action</span><span class="p">(</span><span class="o">*</span><span class="n">action_args</span><span class="p">)</span>
+
+<div class="viewcode-block" id="IntegratedDisplayView.clickdrag_action"><a class="viewcode-back" href="../../../secv_guis.bimask_app.html#secv_guis.bimask_app.main_window.IntegratedDisplayView.clickdrag_action">[docs]</a>    <span class="k">def</span> <span class="nf">clickdrag_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Paint to the currently selected mask, with the currently selected</span>
 <span class="sd">        brush type, at the given position.</span>
@@ -484,87 +565,89 @@
 <span class="sd">        position from a mouse event has to be translated as follows::</span>
 
 <span class="sd">          xpos, ypos = self.mapToScene(event.pos()).toTuple()</span>
-<span class="sd">          self.paint_scene(xpos, ypos)</span>
+<span class="sd">          self.clickdrag_action(xpos, ypos)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># retrieve pmi info</span>
         <span class="c1"># expected idx: 0 for preannot, 1 for annot</span>
         <span class="n">idx_map</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">preannot_pmi</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">annot_pmi</span><span class="p">}</span>
         <span class="n">mask_idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">main_window</span><span class="o">.</span><span class="n">paint_form</span><span class="o">.</span><span class="n">current_button_idx</span>
         <span class="n">pmi</span> <span class="o">=</span> <span class="n">idx_map</span><span class="p">[</span><span class="n">mask_idx</span><span class="p">]</span>
-        <span class="c1"># paint only if this pmi exists</span>
+        <span class="c1"># paint only if this pmi</span>
         <span class="k">if</span> <span class="n">pmi</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span>
         <span class="c1"># retrieve brush info</span>
         <span class="n">p_txt</span><span class="p">,</span> <span class="n">e_txt</span><span class="p">,</span> <span class="n">mp_txt</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">main_window</span><span class="o">.</span><span class="n">PAINTER_TXT</span><span class="p">,</span>
                                 <span class="bp">self</span><span class="o">.</span><span class="n">main_window</span><span class="o">.</span><span class="n">ERASER_TXT</span><span class="p">,</span>
                                 <span class="bp">self</span><span class="o">.</span><span class="n">main_window</span><span class="o">.</span><span class="n">MASKED_PAINTER_TXT</span><span class="p">]</span>
-        <span class="n">known_painters</span> <span class="o">=</span> <span class="p">{</span><span class="n">p_txt</span><span class="p">,</span> <span class="n">e_txt</span><span class="p">,</span> <span class="n">mp_txt</span><span class="p">}</span>
         <span class="n">brush_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">main_window</span><span class="o">.</span><span class="n">paint_form</span><span class="o">.</span><span class="n">current_brush_type</span>
         <span class="n">brush_size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">main_window</span><span class="o">.</span><span class="n">paint_form</span><span class="o">.</span><span class="n">current_brush_size</span>
-        <span class="k">assert</span> <span class="n">brush_type</span> <span class="ow">in</span> <span class="n">known_painters</span><span class="p">,</span> \
-            <span class="s2">&quot;This GUI was designed for 3 brush types only:</span><span class="si">{}</span><span class="s2">, got </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                <span class="n">known_painters</span><span class="p">,</span> <span class="n">brush_type</span><span class="p">)</span>
         <span class="c1"># if no open action exists, create:</span>
-        <span class="n">cmd</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_open_macro_command</span>
+        <span class="n">did_something</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="k">if</span> <span class="n">brush_type</span> <span class="o">==</span> <span class="n">p_txt</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">cmd</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">rgba</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scene</span><span class="p">()</span><span class="o">.</span><span class="n">mask_pmis</span><span class="p">[</span><span class="n">pmi</span><span class="p">]</span>
-                <span class="n">cmd</span> <span class="o">=</span> <span class="n">DrawCommand</span><span class="p">(</span><span class="n">pmi</span><span class="p">,</span> <span class="n">rgba</span><span class="p">,</span> <span class="n">brush_size</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_open_macro_command</span> <span class="o">=</span> <span class="n">cmd</span>
-            <span class="n">cmd</span><span class="o">.</span><span class="n">action</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+            <span class="n">rgba</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scene</span><span class="p">()</span><span class="o">.</span><span class="n">mask_pmis</span><span class="p">[</span><span class="n">pmi</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_perform_composite_action</span><span class="p">(</span><span class="n">DrawCommand</span><span class="p">,</span> <span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">],</span>
+                                           <span class="p">[</span><span class="n">pmi</span><span class="p">,</span> <span class="n">rgba</span><span class="p">,</span> <span class="n">brush_size</span><span class="p">])</span>
+            <span class="n">did_something</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="k">elif</span> <span class="n">brush_type</span> <span class="o">==</span> <span class="n">e_txt</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">cmd</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">cmd</span> <span class="o">=</span> <span class="n">EraseCommand</span><span class="p">(</span><span class="n">pmi</span><span class="p">,</span> <span class="n">brush_size</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_open_macro_command</span> <span class="o">=</span> <span class="n">cmd</span>
-            <span class="n">cmd</span><span class="o">.</span><span class="n">action</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_perform_composite_action</span><span class="p">(</span><span class="n">EraseCommand</span><span class="p">,</span> <span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">],</span>
+                                           <span class="p">[</span><span class="n">pmi</span><span class="p">,</span> <span class="n">brush_size</span><span class="p">])</span>
+            <span class="n">did_something</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="k">elif</span> <span class="n">brush_type</span> <span class="o">==</span> <span class="n">mp_txt</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">cmd</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">rgba</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scene</span><span class="p">()</span><span class="o">.</span><span class="n">mask_pmis</span><span class="p">[</span><span class="n">pmi</span><span class="p">]</span>
-                <span class="n">ref_pmi</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">preannot_pmi</span>  <span class="c1"># preannot is always the ref</span>
-                <span class="n">cmd</span> <span class="o">=</span> <span class="n">DrawOverlappingCommand</span><span class="p">(</span><span class="n">pmi</span><span class="p">,</span> <span class="n">ref_pmi</span><span class="p">,</span> <span class="n">rgba</span><span class="p">,</span> <span class="n">brush_size</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_open_macro_command</span> <span class="o">=</span> <span class="n">cmd</span>
-            <span class="n">cmd</span><span class="o">.</span><span class="n">action</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;unknown brush type:&quot;</span><span class="p">,</span> <span class="n">brush_type</span><span class="p">)</span>
+            <span class="n">rgba</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scene</span><span class="p">()</span><span class="o">.</span><span class="n">mask_pmis</span><span class="p">[</span><span class="n">pmi</span><span class="p">]</span>
+            <span class="n">ref_pmi</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">preannot_pmi</span>  <span class="c1"># preannot is always the ref</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_perform_composite_action</span><span class="p">(</span><span class="n">DrawOverlappingCommand</span><span class="p">,</span> <span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">],</span>
+                                           <span class="p">[</span><span class="n">pmi</span><span class="p">,</span> <span class="n">ref_pmi</span><span class="p">,</span> <span class="n">rgba</span><span class="p">,</span> <span class="n">brush_size</span><span class="p">])</span>
+            <span class="n">did_something</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="c1">#</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">saved_state_tracker</span><span class="o">.</span><span class="n">edit</span><span class="p">()</span></div>
+        <span class="k">if</span> <span class="n">did_something</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">saved_state_tracker</span><span class="o">.</span><span class="n">edit</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="IntegratedDisplayView.add_point"><a class="viewcode-back" href="../../../secv_guis.bimask_app.html#secv_guis.bimask_app.main_window.IntegratedDisplayView.add_point">[docs]</a>    <span class="k">def</span> <span class="nf">add_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">close_after</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scene</span><span class="p">()</span><span class="o">.</span><span class="n">img_pmi</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="n">brush_size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">main_window</span><span class="o">.</span><span class="n">paint_form</span><span class="o">.</span><span class="n">current_brush_size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scene</span><span class="p">()</span><span class="o">.</span><span class="n">object_action</span><span class="p">(</span>
+            <span class="n">PointList</span><span class="p">,</span> <span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">main_window</span><span class="o">.</span><span class="n">undo_stack</span><span class="p">],</span>
+            <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">scene</span><span class="p">(),</span> <span class="n">brush_size</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">),</span>
+             <span class="kc">True</span><span class="p">])</span>  <span class="c1"># draw lines</span>
+        <span class="c1">#</span>
+        <span class="k">if</span> <span class="n">close_after</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">scene</span><span class="p">()</span><span class="o">.</span><span class="n">close_current_object_action</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">main_window</span><span class="o">.</span><span class="n">undo_stack</span><span class="p">)</span></div>
 
     <span class="c1"># EVENT HANDLING</span>
 <div class="viewcode-block" id="IntegratedDisplayView.on_left_press"><a class="viewcode-back" href="../../../secv_guis.bimask_app.html#secv_guis.bimask_app.main_window.IntegratedDisplayView.on_left_press">[docs]</a>    <span class="k">def</span> <span class="nf">on_left_press</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Callback implementation, calls ``paint_scene``</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">xpos</span><span class="p">,</span> <span class="n">ypos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mapToScene</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">pos</span><span class="p">())</span><span class="o">.</span><span class="n">toTuple</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">paint_scene</span><span class="p">(</span><span class="n">xpos</span><span class="p">,</span> <span class="n">ypos</span><span class="p">)</span></div>
+        <span class="n">brush_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">main_window</span><span class="o">.</span><span class="n">paint_form</span><span class="o">.</span><span class="n">current_brush_type</span>
+        <span class="k">if</span> <span class="n">brush_type</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">main_window</span><span class="o">.</span><span class="n">POINT_LIST_TXT</span><span class="p">:</span>
+            <span class="n">mods</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">modifiers</span><span class="p">()</span>
+            <span class="n">has_ctrl</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">mods</span> <span class="o">&amp;</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">ControlModifier</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_point</span><span class="p">(</span><span class="n">xpos</span><span class="p">,</span> <span class="n">ypos</span><span class="p">,</span> <span class="n">close_after</span><span class="o">=</span><span class="n">has_ctrl</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">clickdrag_action</span><span class="p">(</span><span class="n">xpos</span><span class="p">,</span> <span class="n">ypos</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="IntegratedDisplayView.on_left_release"><a class="viewcode-back" href="../../../secv_guis.bimask_app.html#secv_guis.bimask_app.main_window.IntegratedDisplayView.on_left_release">[docs]</a>    <span class="k">def</span> <span class="nf">on_left_release</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        If there is an open macro command, closes it and adds it to the undo</span>
 <span class="sd">        stack</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_finish_composite_command</span><span class="p">()</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_finish_clickdrag_action</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="IntegratedDisplayView.on_move"><a class="viewcode-back" href="../../../secv_guis.bimask_app.html#secv_guis.bimask_app.main_window.IntegratedDisplayView.on_move">[docs]</a>    <span class="k">def</span> <span class="nf">on_move</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">,</span> <span class="n">has_left</span><span class="p">,</span> <span class="n">has_mid</span><span class="p">,</span> <span class="n">has_right</span><span class="p">,</span> <span class="n">this_pos</span><span class="p">,</span> <span class="n">last_pos</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Callback implementation, calls ``paint_scene`` if moving while pressing</span>
-<span class="sd">        left.</span>
+<span class="sd">        Callback implementation, calls ``clickdrag_action`` if moving while</span>
+<span class="sd">        pressing left.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">on_move</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">has_left</span><span class="p">,</span> <span class="n">has_mid</span><span class="p">,</span> <span class="n">has_right</span><span class="p">,</span> <span class="n">this_pos</span><span class="p">,</span>
                         <span class="n">last_pos</span><span class="p">)</span>
         <span class="c1">#</span>
         <span class="k">if</span> <span class="n">has_left</span><span class="p">:</span>
             <span class="n">xpos</span><span class="p">,</span> <span class="n">ypos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mapToScene</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">pos</span><span class="p">())</span><span class="o">.</span><span class="n">toTuple</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">paint_scene</span><span class="p">(</span><span class="n">xpos</span><span class="p">,</span> <span class="n">ypos</span><span class="p">)</span></div>
-
-    <span class="k">def</span> <span class="nf">_finish_composite_command</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        If there is an open macro command, closes it and adds it to the undo</span>
-<span class="sd">        stack</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">cmd</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_open_macro_command</span>
-        <span class="k">if</span> <span class="n">cmd</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">cmd</span><span class="o">.</span><span class="n">finish</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">main_window</span><span class="o">.</span><span class="n">undo_stack</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_open_macro_command</span> <span class="o">=</span> <span class="kc">None</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">clickdrag_action</span><span class="p">(</span><span class="n">xpos</span><span class="p">,</span> <span class="n">ypos</span><span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="CrackAnnotPaintForm"><a class="viewcode-back" href="../../../secv_guis.bimask_app.html#secv_guis.bimask_app.main_window.CrackAnnotPaintForm">[docs]</a><span class="k">class</span> <span class="nc">CrackAnnotPaintForm</span><span class="p">(</span><span class="n">MaskPaintForm</span><span class="p">):</span>
@@ -654,6 +737,7 @@
     <span class="n">PAINTER_TXT</span> <span class="o">=</span> <span class="s2">&quot;Painter&quot;</span>
     <span class="n">ERASER_TXT</span> <span class="o">=</span> <span class="s2">&quot;Eraser&quot;</span>
     <span class="n">MASKED_PAINTER_TXT</span> <span class="o">=</span> <span class="s2">&quot;Masked painter&quot;</span>
+    <span class="n">POINT_LIST_TXT</span> <span class="o">=</span> <span class="s2">&quot;Points&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">initial_mask_color</span><span class="o">=</span><span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">54</span><span class="p">,</span> <span class="mi">76</span><span class="p">,</span> <span class="mi">150</span><span class="p">),</span>
                  <span class="n">initial_preannot_color</span><span class="o">=</span><span class="p">(</span><span class="mi">102</span><span class="p">,</span> <span class="mi">214</span><span class="p">,</span> <span class="mi">123</span><span class="p">,</span> <span class="mi">100</span><span class="p">),</span>
@@ -675,7 +759,8 @@
         <span class="c1"># define controller widgets</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">file_lists</span> <span class="o">=</span> <span class="n">FileLists</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">paint_form</span> <span class="o">=</span> <span class="n">CrackAnnotPaintForm</span><span class="p">(</span>
-            <span class="bp">self</span><span class="p">,</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">PAINTER_TXT</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ERASER_TXT</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">MASKED_PAINTER_TXT</span><span class="p">],</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">PAINTER_TXT</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ERASER_TXT</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">MASKED_PAINTER_TXT</span><span class="p">,</span>
+                   <span class="bp">self</span><span class="o">.</span><span class="n">POINT_LIST_TXT</span><span class="p">],</span>
             <span class="n">max_brush_size</span><span class="p">,</span> <span class="n">thresh_min</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">THRESH_MIN</span><span class="p">,</span>
             <span class="n">thresh_max</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">THRESH_MAX</span><span class="p">,</span> <span class="n">thresh_num_steps</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">THRESH_NUM_STEPS</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">save_form</span> <span class="o">=</span> <span class="n">IntegratedSaveForm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default_path</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
