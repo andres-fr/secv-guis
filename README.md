@@ -4,6 +4,15 @@
 
 Repository hosting diverse Python3 Qt GUIs made at the Systems Engineering and Computer Vision Department @ Goethe University Frankfurt.
 
+```
+This project has received funding from the
+European Union’s Horizon 2020 research and
+innovation programme under grant agreement
+No. 769066
+```
+
+![](assets/flag_eu.png)
+
 ## DEMOS:
 
 ### Bimask App:
