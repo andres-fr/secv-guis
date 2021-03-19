@@ -294,7 +294,8 @@ class IntegratedDisplayView(DisplayView):
         """
         assert self.scene().img_pmi is not None, \
             "You need to load an image first!"
-        self._preannot_pmap = np.load(preannot_path)["entropy"]
+        im = Image.open(preannot_path)
+        self._preannot_pmap = np.asarray(im)#np.load(,allow_pickle=True)["entropy"]
         if normalize:
             try:
                 self._preannot_pmap /= self._preannot_pmap.max()
@@ -766,6 +767,7 @@ class MainWindow(QtWidgets.QMainWindow):
             if success:
                 self.file_lists.img_list.file_list.setCurrentItem(nxt_item)
 
+
     def _handle_img_selection(self, basename):
         """
         This protected method is triggered when double clicking on an
@@ -774,6 +776,10 @@ class MainWindow(QtWidgets.QMainWindow):
         abspath = os.path.join(self.file_lists.img_list.dirpath, basename)
         success = self.graphics_view.new_image(abspath, self.mask_color,
                                                self.preannot_color)
+        if self.file_lists.preannot_list is not None:
+            print(basename)
+            self.file_lists.preannot_list.update_path(self.file_lists.preannot_list.dirpath,basename)
+
         if success:
             self.current_img_basename = basename
         return success

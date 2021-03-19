@@ -48,12 +48,16 @@ class FileList(QtWidgets.QWidget):
         self.file_watcher.directoryChanged.connect(
             lambda: self.update_path(self.dirpath))
 
-    def update_path(self, dirname):
+    def update_path(self, dirname,file_filter=None):
         """
         :param str dirname: The new directory path to be listed.
         """
-        file_names = [f for f in os.listdir(dirname)
+        if file_filter is None:
+            file_names = [f for f in os.listdir(dirname)
                       if f.lower().endswith(tuple(self.extensions))]
+        else:
+            file_names = [f for f in os.listdir(dirname)
+                      if f.lower().endswith(tuple(self.extensions)) and f.lower().find(file_filter.lower())!=-1]
         self.file_list.clear()
         self.file_list.addItems(file_names)
         #
