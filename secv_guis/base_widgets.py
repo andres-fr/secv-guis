@@ -60,7 +60,7 @@ class FileList(QtWidgets.QWidget):
                       if f.lower().endswith(tuple(self.extensions)) and f.lower().find(file_filter.lower())!=-1]
         self.file_list.clear()
         self.file_list.addItems(file_names)
-        #
+        
         self.file_watcher.removePath(self.dirpath)
         self.file_watcher.addPath(dirname)
         #
@@ -352,6 +352,7 @@ class MaskPaintForm(QtWidgets.QWidget):
         """
         delta = float(sl_val) / self.thresh_num_steps
         pval = self.thresh_min + delta * (self.thresh_max - self.thresh_min)
+        #print("pval ",pval)
         return pval
 
     def _set_thresh_label(self, lbl, sl_val):

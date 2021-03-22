@@ -71,6 +71,8 @@ def exp_threshold(keep_p_value, lmbd):
 
 
 def pmap_to_mask(pmap, keep_highest_pval=0.05, discard_lowest_pval=0.5):
+    print(np.max(pmap),np.min(pmap),keep_highest_pval)
+    return (pmap/(2**16-1))>=keep_highest_pval
     """
     This method performs the following steps:
 
@@ -295,7 +297,7 @@ class IntegratedDisplayView(DisplayView):
         assert self.scene().img_pmi is not None, \
             "You need to load an image first!"
         im = Image.open(preannot_path)
-        self._preannot_pmap = np.asarray(im)#np.load(,allow_pickle=True)["entropy"]
+        self._preannot_pmap = np.asarray(im)
         if normalize:
             try:
                 self._preannot_pmap /= self._preannot_pmap.max()
@@ -334,9 +336,11 @@ class IntegratedDisplayView(DisplayView):
         """
         Updates the preannot->mask threshold.
         """
+        
         if self._preannot_pmap is not None:
             new_m = pmap_to_mask(self._preannot_pmap, keep_p_value,
                                  discard_p_value)
+
             self.preannot_pmi = self.scene().replace_mask_pmi(
                 self.preannot_pmi, new_m)
         #
@@ -583,9 +587,9 @@ class MainWindow(QtWidgets.QMainWindow):
 
     # These variables handle the preannotation thresholding. Check pmap_to_mask
     DISCARD_P_VALUE = 0.5  # Number in range (thresh_slider_max, 1]
-    THRESH_MIN = 0.0000001
-    THRESH_MAX = 0.000000001
-    THRESH_NUM_STEPS = 400
+    THRESH_MIN = 0.5
+    THRESH_MAX = 0.0001
+    THRESH_NUM_STEPS = 999
     #
     PAINTER_TXT = "Painter"
     ERASER_TXT = "Eraser"
@@ -766,7 +770,7 @@ class MainWindow(QtWidgets.QMainWindow):
             success = self._handle_img_selection(nxt_item.text())
             if success:
                 self.file_lists.img_list.file_list.setCurrentItem(nxt_item)
-
+       
 
     def _handle_img_selection(self, basename):
         """
@@ -776,7 +780,7 @@ class MainWindow(QtWidgets.QMainWindow):
         abspath = os.path.join(self.file_lists.img_list.dirpath, basename)
         success = self.graphics_view.new_image(abspath, self.mask_color,
                                                self.preannot_color)
-        if self.file_lists.preannot_list is not None:
+        if self.file_lists.preannot_list is not None:                                       
             print(basename)
             self.file_lists.preannot_list.update_path(self.file_lists.preannot_list.dirpath,basename)
 
