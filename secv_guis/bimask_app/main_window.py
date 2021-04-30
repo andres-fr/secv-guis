@@ -32,95 +32,15 @@ from ..objects import PointList
 # #############################################################################
 # ## APPLICATION LOGIC FOR QUICK MASKING
 # #############################################################################
-def exp_lambda_estimator(elts):
-    """
-    :param elts: A collection of elements (can also be numpy).
-
-    Given a set of elements, assumed to be exponentially distributed, returns
-    the unbiased estimator for the lambda parameter of the exp distribution.
-    """
-    try:
-        num_elts = elts.size
-        elt_sum = elts.sum()
-    except Exception:
-        num_elts = len(elts)
-        elt_sum = sum(elts)
-    #
-    lmbd = num_elts / elt_sum
-    lmbd = lmbd - (lmbd / num_elts)
-    return lmbd
-
-
-def exp_threshold(keep_p_value, lmbd):
-    """
-    :param keep_p_value: Scalar in range ``(0, 1]``
-    :param elts: collection of values, assumed to be sampled from an
-      exponential distribution.
-    :returns: A threshold ``t``, so that the integral for ``exp(lambda)`` from
-      t to infinity equals ``keep_p_value``.
-
-    This function assumes that the given ``elts`` have been sampled from an
-    exponential distribution. Then inferes lambda, using the unbiased ML
-    estimator (see https://en.wikipedia.org/wiki/Exponential_distribution)
-    and returns the threshold ``t`` that fulfills ``keep_p_value`` for the
-    distribution above ``t``.
-    """
-    assert 0 < keep_p_value <= 1, "area_p_conserve must be in (0, 1]"
-    threshold = -np.log(keep_p_value) / lmbd
-    return threshold
-
-
-def pmap_to_mask(pmap, keep_highest_pval=0.05, discard_lowest_pval=0.5):
-    print(np.max(pmap),np.min(pmap),keep_highest_pval)
-    return (pmap/(2**16-1))>=keep_highest_pval
-    """
-    This method performs the following steps:
-
-    1. Assuming that pmap values are exponentially distributed, extracts the
-         unbiased lambda parameter and the cumulative distribution.
-    2. Applies threshold to the given low/high p-values
-
-    This method uses the standard connected component extraction mechanism
-    in Python, i.e. ``scipy.ndimage.measurements.label`` and
-    ``skimage.measure.regionprops``.
-
-    :param pmap: A float array of shape ``h, w``.
-    :param keep_highest_pval: The p-value designing the amount of top 'pmap'
-      scores to be surely kept.
-    :param discard_lowest_pval: The p-value designing the amount of bottom
-      'pmap' scores to be surely discarded.
-    :returns: The output mask
-    """
-    # print("PMAP TO MASK CALLED:", keep_highest_pval, discard_lowest_pval)
-    assert keep_highest_pval < discard_lowest_pval, \
-        "highest-P-val must be lower than lowest-P-val."
-
-    lmbd = exp_lambda_estimator(pmap.ravel())
-    t_keep_above = exp_threshold(keep_highest_pval, lmbd)
-    t_discard_below = exp_threshold(discard_lowest_pval, lmbd)
-    out_mask = apply_hysteresis_threshold(pmap, t_discard_below, t_keep_above)
-
-    # sure keep: pmap>=t_keep_above   sure discard: pmap <= t_discard_below
-
-    # t = exp_threshold(keep_below_pval, pmap.ravel())
-    # mask = pmap >= t
-    # # label performs connected component identification, by default
-    # # using a cross-shape structuring elt.
-    # labels, nlabels = label(mask)
-    # # compute a set of feats for each isolated component
-    # props = regionprops(labels, pmap)
-    # #
-    # areas = [p.area for p in props]
-    # areas_threshold = exp_threshold(keep_p_value, areas)
-    #
-    # out_mask = np.zeros_like(mask)
-    # for p in props:
-    #     if p.area >= areas_threshold:
-    #         coords_y, coords_x = p.coords.T
-    #         out_mask[(coords_y, coords_x)] = True
-
-    return out_mask
-
+def pmap_to_mask(pmap,upper_percentile,lower_percentile,percentile_max=100):
+    pmap=np.array(pmap)
+    values = np.sort(pmap[::-1].flatten())
+    up = int((len(values)-1) * upper_percentile /percentile_max)
+    lp= int((len(values)-1) * lower_percentile / percentile_max )
+    pmap[pmap>values[up]]=0
+    pmap[pmap<values[lp]]=0
+    pmap=pmap>0
+    return pmap
 
 # #############################################################################
 # ## WIDGET EXTENSIONS AND COMPOSITIONS TO ADD SPECIFIC LOGIC+LAYOUT
@@ -287,23 +207,31 @@ class IntegratedDisplayView(DisplayView):
         self.saved_state_tracker = SavedStateTracker()
         return True
 
-    def preannot_from_path(self, preannot_path, rgba, keep_p_value=0.05,
-                           discard_p_value=0.5, normalize=False):
+    def preannot_from_path(self, preannot_path, rgba, upper_thresh=100,
+                           lower_thresh=90, normalize=False):
         """
         This method is prototype-ish: It loads an ``.npz`` file with and
         'entropy' field, expected to have a numpy float matrix with same
-        shape as the image.
+        shape as the image. Alternatively it takes a greyscale image file 
+        suppoted by PIL.
         """
         assert self.scene().img_pmi is not None, \
             "You need to load an image first!"
-        im = Image.open(preannot_path)
-        self._preannot_pmap = np.asarray(im)
+        if preannot_path.endswith(".npz") or preannot_path.endswith(".npy"):
+            self._preannot_pmap = np.load(preannot_path)["entropy"]
+        else:
+            img=np.asanyarray(Image.open(preannot_path))
+            if len(img.shape)>2:
+                img=img[:,:,0]
+            self._preannot_pmap = np.asarray(img)
+            normalize=True
+
         if normalize:
             try:
-                self._preannot_pmap /= self._preannot_pmap.max()
+                self._preannot_pmap = self._preannot_pmap/np.max(self._preannot_pmap)
             except ZeroDivisionError:
                 pass
-        m = pmap_to_mask(self._preannot_pmap, keep_p_value, discard_p_value)
+        m = pmap_to_mask(self._preannot_pmap, upper_thresh, lower_thresh)
         self.preannot_pmi = self.scene().replace_mask_pmi(
             self.preannot_pmi, m)
         #
@@ -317,6 +245,7 @@ class IntegratedDisplayView(DisplayView):
 
         Loads a binary mask into the scene as an RGBA-colored mask.
         """
+
         assert self.scene().img_pmi is not None, \
             "You need to load an image first!"
         arr = load_img_and_exif(mask_path)[0]
@@ -332,19 +261,19 @@ class IntegratedDisplayView(DisplayView):
         self.saved_state_tracker.edit()
 
     # MASK SINGLE-SHOT ACTIONS
-    def change_preannot_pval(self, keep_p_value, discard_p_value=0.5):
+    def change_preannot_pval(self, upper_thresh, lower_thresh):
         """
         Updates the preannot->mask threshold.
         """
-        
         if self._preannot_pmap is not None:
-            new_m = pmap_to_mask(self._preannot_pmap, keep_p_value,
-                                 discard_p_value)
-
+            new_m = pmap_to_mask(self._preannot_pmap, 
+                                upper_thresh,
+                                lower_thresh)
             self.preannot_pmi = self.scene().replace_mask_pmi(
                 self.preannot_pmi, new_m)
         #
-        self.saved_state_tracker.edit()
+        if self.saved_state_tracker is not None:
+            self.saved_state_tracker.edit()
 
     def change_preannot_rgba(self, rgba):
         """
@@ -532,18 +461,12 @@ class CrackAnnotPaintForm(MaskPaintForm):
         """
         self.current_button_idx = self._buttons.index(but)
 
-    def threshold_slider_changed(self, idx, val):
+    def threshold_slider_changed(self, t, t2):
         """
-        :param int idx: The mask index. 0 is the index of the preannotation,
-          1 for annotation.
-        :param val: The new p-value.
-
-        Update preannotation mask with new p-value by calling the
-        ``change_preannot_val`` method of the view. Only works if idx is 0.
+            :param t : Upper Threshold
+            :param t2 : Lower Threshold
         """
-        if idx == 0:
-            self.main_window.graphics_view.change_preannot_pval(
-                val, self.main_window.DISCARD_P_VALUE)
+        self.main_window.graphics_view.change_preannot_pval(t,t2)
 
     def rgba_box_changed(self, idx, r, g, b, a):
         """
@@ -587,9 +510,9 @@ class MainWindow(QtWidgets.QMainWindow):
 
     # These variables handle the preannotation thresholding. Check pmap_to_mask
     DISCARD_P_VALUE = 0.5  # Number in range (thresh_slider_max, 1]
-    THRESH_MIN = 0.5
-    THRESH_MAX = 0.0001
-    THRESH_NUM_STEPS = 999
+    THRESH_MIN = 0
+    THRESH_MAX = 100
+    THRESH_NUM_STEPS = 100
     #
     PAINTER_TXT = "Painter"
     ERASER_TXT = "Eraser"
@@ -770,7 +693,6 @@ class MainWindow(QtWidgets.QMainWindow):
             success = self._handle_img_selection(nxt_item.text())
             if success:
                 self.file_lists.img_list.file_list.setCurrentItem(nxt_item)
-       
 
     def _handle_img_selection(self, basename):
         """
@@ -780,10 +702,13 @@ class MainWindow(QtWidgets.QMainWindow):
         abspath = os.path.join(self.file_lists.img_list.dirpath, basename)
         success = self.graphics_view.new_image(abspath, self.mask_color,
                                                self.preannot_color)
-        if self.file_lists.preannot_list is not None:                                       
-            print(basename)
-            self.file_lists.preannot_list.update_path(self.file_lists.preannot_list.dirpath,basename)
 
+        if self.file_lists.preannot_list is not None:
+            self.file_lists.preannot_list.update_path(self.file_lists.preannot_list.dirpath,
+                                                           basename)
+        if self.file_lists.mask_list is not None:
+            self.file_lists.mask_list.update_path(self.file_lists.mask_list.dirpath,
+                                                           basename)
         if success:
             self.current_img_basename = basename
         return success
@@ -805,8 +730,7 @@ class MainWindow(QtWidgets.QMainWindow):
         pval = self.paint_form.slider_to_p_val(
             self.paint_form._sliders[-1].value())
         self.graphics_view.preannot_from_path(
-            abspath, self.preannot_color, keep_p_value=pval,
-            discard_p_value=self.DISCARD_P_VALUE)
+            abspath, self.preannot_color)
 
     def wheelEvent(self, event):
         """
