@@ -48,12 +48,19 @@ class FileList(QtWidgets.QWidget):
         self.file_watcher.directoryChanged.connect(
             lambda: self.update_path(self.dirpath))
 
-    def update_path(self, dirname):
+    def update_path(self, dirname,selected_image=None):
         """
         :param str dirname: The new directory path to be listed.
+        :param selected_images: The name of an image with which the list can be filtered
         """
-        file_names = [f for f in os.listdir(dirname)
-                      if f.lower().endswith(tuple(self.extensions))]
+        if selected_image is None:
+            file_names = [f for f in os.listdir(dirname)
+                          if f.lower().endswith(tuple(self.extensions))]
+        else:
+            file_names = [f for f in os.listdir(dirname)
+                          if f.lower().endswith(tuple(self.extensions))
+                          and selected_image.lower() in f.lower()]
+
         self.file_list.clear()
         self.file_list.addItems(file_names)
         #
@@ -287,20 +294,35 @@ class MaskPaintForm(QtWidgets.QWidget):
         sl.setMinimum(0)
         sl.setMaximum(self.thresh_num_steps)
         sl.setSingleStep(1)
-        sl.setValue(sl.maximum() // 2)
+        sl.setValue(sl.maximum())
+        #
+        sl2 = QtWidgets.QSlider(None, orientation=QtCore.Qt.Horizontal)
+        lbl2 = QtWidgets.QLabel()
+        sl2.setVisible(slider_visible)
+        lbl2.setVisible(slider_visible)
+        sl2.setMinimum(0)
+        sl2.setMaximum(self.thresh_num_steps)
+        sl2.setSingleStep(1)
+        sl2.setValue(sl2.maximum() * 0.9)
         #
         self._buttons.append(but)
         self._boxes.append(box)
         self._labels.append(lbl)
+        self._labels.append(lbl2)
         self._sliders.append(sl)
+        self._sliders.append(sl2)
         # local layout hierarchy
         lyt = QtWidgets.QVBoxLayout()
         top = QtWidgets.QHBoxLayout()
-        bottom = QtWidgets.QHBoxLayout()
+        bottom = QtWidgets.QVBoxLayout()
+        bottom_label_field= QtWidgets.QHBoxLayout()
         top.addWidget(but)
         top.addWidget(box)
-        bottom.addWidget(lbl)
+        bottom_label_field.addWidget(lbl)
+        bottom_label_field.addWidget(lbl2)
+        bottom.addLayout(bottom_label_field)
         bottom.addWidget(sl)
+        bottom.addWidget(sl2)
         lyt.addLayout(top)
         lyt.addLayout(bottom)
         # add local hierarchy to main layout and button to group
@@ -309,10 +331,17 @@ class MaskPaintForm(QtWidgets.QWidget):
         # add connections
         box.connect(
             lambda r, g, b, a: self._handle_rgba_box_changed(box, r, g, b, a))
+        sl.sliderReleased.connect(
+            lambda: self._handle_threshold_slider_changed(sl,sl2))
+        sl2.sliderReleased.connect(
+            lambda: self._handle_threshold_slider_changed(sl,sl2))
         sl.valueChanged.connect(
-            lambda val: self._handle_threshold_slider_changed(sl, val))
+            lambda val: self._set_thresh_label(lbl,val,"Upper thresh"))
+        sl2.valueChanged.connect(
+            lambda val: self._set_thresh_label(lbl2,val,"Lower thresh"))
         # initialize label
-        self._set_thresh_label(lbl, sl.value())
+        self._set_thresh_label(lbl, sl.value(),"Upper thresh")
+        self._set_thresh_label(lbl2, sl2.value(),"Lower thresh")
         #
         if activate:
             but.click()
@@ -350,11 +379,11 @@ class MaskPaintForm(QtWidgets.QWidget):
         pval = self.thresh_min + delta * (self.thresh_max - self.thresh_min)
         return pval
 
-    def _set_thresh_label(self, lbl, sl_val):
+    def _set_thresh_label(self, lbl, sl_val,name):
         """
         """
         t = self.slider_to_p_val(sl_val)
-        lbl.setText("Thresh: {:.10f}".format(t))
+        lbl.setText(name+": {:0.0f}".format(t))
         return t
 
     def _set_brush_size_label(self, sl_val):
@@ -362,12 +391,10 @@ class MaskPaintForm(QtWidgets.QWidget):
         """
         self.brush_size_label.setText("Brush size: {}".format(sl_val))
 
-    def _handle_threshold_slider_changed(self, sl, sl_val):
+    def _handle_threshold_slider_changed(self, sl,sl2):
         """
         """
-        idx = self._sliders.index(sl)
-        t = self._set_thresh_label(self._labels[idx], sl_val)
-        self.threshold_slider_changed(idx, t)
+        self.threshold_slider_changed(sl.value(),sl2.value())
 
     def _handle_rgba_box_changed(self, box, r, g, b, a):
         """
